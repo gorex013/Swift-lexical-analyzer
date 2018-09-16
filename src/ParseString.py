@@ -1,4 +1,4 @@
-from keywords import keywords
+from src.keywords import keywords
 
 def parseString(content):
 	tokens = []

@@ -3,9 +3,13 @@ import src.Numbers.parse_natural as natural
 
 
 def parse_float(s=''):
+    if s == '':
+        return ''
     left = integer.parse_integer(s)
     right = ''
     i = len(left)
+    if i == len(s):
+        return left
     if s[i] == '.':
         i += 1
         right = '.' + natural.parse_natural(s[i:])
