@@ -1,3 +1,3 @@
 from src.Identifier import parse_identifier as id
 
-print(id.parse_identifier("$21"))
+print(id.parse_ticks_identifier("`a21`"))
