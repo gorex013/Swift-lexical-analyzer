@@ -1,3 +1,3 @@
-import src.Numbers.parse_double as number
+import src.Numbers.parse_number as number
 
 print(number.parse_double(""))
