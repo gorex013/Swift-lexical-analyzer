@@ -1,6 +1,6 @@
 import string
 
-A = [string.digits]
+A = [i for i in string.digits]
 
 
 def parse_natural(s=''):
