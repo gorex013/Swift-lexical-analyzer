@@ -1,3 +1,3 @@
-import src.Numbers.parse_number as number
+from src.Identifier import parse_identifier as id
 
-print(number.parse_double(""))
+print(id.parse_identifier("$21"))
