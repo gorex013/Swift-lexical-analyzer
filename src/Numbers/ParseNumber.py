@@ -158,7 +158,7 @@ F = {
     2: "INT",
     3: None,
     4: None,
-    5: "DOUBLE",
+    5: "FLOAT",
     6: None,
     7: None,
     8: "DOUBLE",

@@ -1,3 +1,3 @@
-import src.ParseNumber as number
+import src.Numbers.parse_double as number
 
-print(number.parse("123.1e-2"))
+print(number.parse_double("-0.1e-2-1"))
