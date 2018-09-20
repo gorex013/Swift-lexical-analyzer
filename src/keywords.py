@@ -1,6 +1,6 @@
 keywords = {}
 operators = {}
-delimeters = {}
+delimiters = {}
 
 # DECLARATIONS
 keywords['associatedtype'] = 'D_ASSOCIATED_TYPE'
@@ -58,7 +58,7 @@ keywords['Self'] = 'E_SELF_CAPITAL'
 keywords['throw'] = 'E_THROW'
 keywords['throws'] = 'E_THROWS'
 # PATTERNS
-keywords['_'] = 'P_UNDERSCORE'
+keywords[' _ '] = 'P_UNDERSCORE'
 # KEYWORD WITH A NUMBER SIGN
 keywords['#available'] = '#_AVAILABLE'
 keywords['#colorLiteral'] = '#_COLOR_LITERAL'
@@ -104,30 +104,30 @@ keywords['unowned'] = 'C_UNOWNED'
 keywords['weak'] = 'C_WEAK'
 keywords['willSet'] = 'C_WILDSET'
 # DELIMETERS
-delimeters['('] = 'DEL_LP' # Left Parenthesis
-delimeters[')'] = 'DEL_RP' 
-delimeters['{'] = 'DEL_LCP' # Left Curve Parenthesis 
-delimeters['}'] = 'DEL_RCP'
-delimeters['['] = 'DEL_LSP' # Left Square Parenthesis
-delimeters[']'] = 'DEL_RSP'
-delimeters[','] = 'DEL_COMMA'
-delimeters['.'] = 'DEL_DOT'
-delimeters[':'] = 'DEL_COLON'
-delimeters[';'] = 'DEL_SEMICOLON'
-delimeters['='] = 'DEL_EQUAL'
-delimeters['@'] = 'DEL_AT'
-delimeters['#'] = 'DEL_SHARP??'
-delimeters['&'] = 'DEL_AMPERSAND'
-delimeters['->'] = 'DEL_ARROW'
-delimeters['`'] = 'DEL_apostrof?'
-delimeters['?'] = 'DEL_QUEST_CONSUMER'
-delimeters['!'] = 'DEL_QUEST_GIVER'
+delimiters['('] = 'DEL_LP'  # Left Parenthesis
+delimiters[')'] = 'DEL_RP'
+delimiters['{'] = 'DEL_LCP'  # Left Curve Parenthesis
+delimiters['}'] = 'DEL_RCP'
+delimiters['['] = 'DEL_LSP'  # Left Square Parenthesis
+delimiters[']'] = 'DEL_RSP'
+delimiters[','] = 'DEL_COMMA'
+delimiters['.'] = 'DEL_DOT'
+delimiters[':'] = 'DEL_COLON'
+delimiters[';'] = 'DEL_SEMICOLON'
+delimiters['='] = 'DEL_EQUAL'
+delimiters['@'] = 'DEL_AT'
+delimiters['#'] = 'DEL_SHARP??'
+delimiters['&'] = 'DEL_AMPERSAND'
+delimiters['->'] = 'DEL_ARROW'
+delimiters['`'] = 'DEL_APOSTROPH'
+delimiters['?'] = 'DEL_QUEST_CONSUMER'
+delimiters['!'] = 'DEL_QUEST_GIVER'
 # OPERATORS
 operators['+'] = 'O_PLUS'
 operators['*'] = 'O_MULT'
 operators['*'] = 'O_POWER'
 operators['-'] = 'O_MINUS'
 operators['/'] = 'O_DIV'
-operators['%'] = 'O_REMINDER_OF_BETTER_DAYS'
+operators['%'] = 'O_MOD'  # 'O_REMINDER_OF_BETTER_DAYS'
 
 # TO ADD + - = etc.
