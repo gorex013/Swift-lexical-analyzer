@@ -1,4 +1,7 @@
 keywords = {}
+operators = {}
+delimeters = {}
+
 # DECLARATIONS
 keywords['associatedtype'] = 'D_ASSOCIATED_TYPE'
 keywords['class'] = 'D_CLASS'
@@ -100,22 +103,31 @@ keywords['set'] = 'C_SET'
 keywords['unowned'] = 'C_UNOWNED'
 keywords['weak'] = 'C_WEAK'
 keywords['willSet'] = 'C_WILDSET'
+# DELIMETERS
+delimeters['('] = 'DEL_LP' # Left Parenthesis
+delimeters[')'] = 'DEL_RP' 
+delimeters['{'] = 'DEL_LCP' # Left Curve Parenthesis 
+delimeters['}'] = 'DEL_RCP'
+delimeters['['] = 'DEL_LSP' # Left Square Parenthesis
+delimeters[']'] = 'DEL_RSP'
+delimeters[','] = 'DEL_COMMA'
+delimeters['.'] = 'DEL_DOT'
+delimeters[':'] = 'DEL_COLON'
+delimeters[';'] = 'DEL_SEMICOLON'
+delimeters['='] = 'DEL_EQUAL'
+delimeters['@'] = 'DEL_AT'
+delimeters['#'] = 'DEL_SHARP??'
+delimeters['&'] = 'DEL_AMPERSAND'
+delimeters['->'] = 'DEL_ARROW'
+delimeters['`'] = 'DEL_apostrof?'
+delimeters['?'] = 'DEL_QUEST_CONSUMER'
+delimeters['!'] = 'DEL_QUEST_GIVER'
 # OPERATORS
-keywords['('] = 'O_LP' # Left Parenthesis
-keywords[')'] = 'O_RP' 
-keywords['{'] = 'O_LCP' # Left Curve Parenthesis 
-keywords['}'] = 'O_RCP'
-keywords['['] = 'O_LSP' # Left Square Parenthesis
-keywords[']'] = 'O_RSP'
-keywords[','] = 'O_COMMA'
-keywords['.'] = 'O_DOT'
-keywords[':'] = 'O_COLON'
-keywords[';'] = 'O_SEMICOLON'
-keywords['='] = 'O_EQUAL'
-keywords['@'] = 'O_AT'
-keywords['#'] = 'O_SHARP??'
-keywords['&'] = 'O_??'
-keywords['->'] = 'O_ARROW'
-keywords['`'] = 'O_apostrof?'
-keywords['?'] = 'O_QUEST_CONSUMER'
-keywords['!'] = 'O_QUEST_GIVER'
+operators['+'] = 'O_PLUS'
+operators['*'] = 'O_MULT'
+operators['*'] = 'O_POWER'
+operators['-'] = 'O_MINUS'
+operators['/'] = 'O_DIV'
+operators['%'] = 'O_REMINDER_OF_BETTER_DAYS'
+
+# TO ADD + - = etc.
