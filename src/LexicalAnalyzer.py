@@ -1,30 +1,80 @@
 from src.swift_tokens import *
 import src.preprocessor as ps
 
-def format(source):
-    with open(source) as f:
+def format_file(src_fname):
+    with open(src_fname) as f:
         content = f.read()
-    comments_filtered = ps.preprocess_src(content)
-    tokens_string = keywords_replacement(comments_filtered)
-    tokens_list = extract_tokens(tokens_string)
+        return format(content)
+
+def format(content):
+    comments_filtered = ps.preprocess_comments(content)
+    delimiters_escaped = ps.delimiter_spacing(comments_filtered)
+    operators_escaped = ps.operator_spacing(delimiters_escaped)
+    tokens_list = keywords_replacement(operators_escaped)
     return tokens_list
 
-def extract_tokens(tokens_string: str) -> list:
-    words = tokens_string.split(' ')
+    return is_delimiter or is_keyword or is_operator
 
-def keywords_replacement(s):
-    for key in keywords.keys():
-        s = s.replace(key, ' ' + keywords[key] + ' ')
-    return s
+def handle_literal(literal): #TODO: ADD NUMBER LITERALS AND STRINGS
+    return {'identifier': literal}
+
+
+def process_token(word):
+    keyword = keywords.get(word, None)
+    delimiter = delimiters.get(word, None)
+    operator = operators.get(word, None)
+
+    truth = (keyword is not None) + (delimiter is not None) + (operator is not None)
+    if truth > 1 or truth == 0:
+        raise Exception("Tokens meaning exception: IS IT EVEN POSSIBLE?")
+
+    if keyword != None:
+        return keyword
+    elif delimiter != None:
+        return delimiter
+    elif operator != None:
+        return operator
+
+
+def is_special(word):
+    is_keyword = keywords.get(word, None)
+    is_delimiter = delimiters.get(word, None)
+    is_operator = operators.get(word, None)
+    return is_operator or is_keyword or is_delimiter
+
+def is_processed(word):
+    is_keyword = word in keywords.values()
+    is_delimiter = word in delimiters.values()
+    is_operator = word in operators.values()
+    return is_operator or is_keyword or is_delimiter
+
+def keywords_replacement(content):
+    words = content.split(' ')
+    for i in range(len(words)):
+        words[i] = words[i].strip()
+
+    words = [w for w in words if w is not '']
+
+    for i in range(len(words)):
+        if is_processed(words[i]):
+            continue
+        elif is_special(words[i]):
+            words[i] = process_token(words[i])
+        else:
+            words[i] = handle_literal(words[i])
+
+    return words
 
 
 if __name__ == '__main__':
-    print(format("""var a = 10 + 15 //k
-    var b=11 % 2 //k
-    func hello(x:Int)->Int
-    let x =131 //ewihfio
-    let `let` = 12
-    func hello(_ y:Int){
-      print(y)
+    tokens = format("""struct Stack<Element> {
+    var items = [Element]()
+    mutating func push(_ item: Element) {
+        items.append(item)
     }
-    hello(`let`)"""))
+    mutating func pop() -> Element {
+        return items.removeLast()
+    }
+}""")
+    for _ in tokens:
+        print(_)

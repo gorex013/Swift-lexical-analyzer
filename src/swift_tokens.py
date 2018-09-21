@@ -129,5 +129,9 @@ operators['*'] = 'O_POWER'
 operators['-'] = 'O_MINUS'
 operators['/'] = 'O_DIV'
 operators['%'] = 'O_MOD'  # 'O_REMINDER_OF_BETTER_DAYS'
+operators['>'] = 'O_BIGGER'
+operators['>='] = 'O_BIGGER_EQ'
+operators['<'] = 'O_LESS'
+operators['<='] = 'O_LESS_EQ'
 
 # TO ADD + - = etc.

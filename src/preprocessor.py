@@ -3,12 +3,10 @@ from src.swift_tokens import delimiters, operators
 '''
 
 '''
-def preprocess_src(content):
+def preprocess_comments(content):
     multiline_cleaned = format_multiline_comment(content)
     inline_cleaned = format_inline_comment(multiline_cleaned)
-    delimeters_escaped = delimiter_spacing(inline_cleaned)
-    operators_escaped = operator_spacing(delimeters_escaped)
-    return operators_escaped
+    return inline_cleaned
 
 '''
 
