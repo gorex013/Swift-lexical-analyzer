@@ -1,4 +1,4 @@
-import keywords
+import src.keywords as keywords
 
 
 def format(s):
@@ -13,8 +13,8 @@ def format(s):
 def format_multiline_comment(s):
     start = s.find('/*')
     while start != -1:
-        end = s.find('*/')
-        s = s.replace(s[start:end], ' ')  # todo: remove only first occurence
+        end = s.find('*/') + len('*/')
+        s = s.replace(s[start:end], '')  # todo: remove only first occurence
         start = s.find('/*')
     return s
 
@@ -27,8 +27,7 @@ def format_inline_comment(s):
             end = len(s)
         end = start + end + 1
 
-        s = s.replace(s[start:end], ' ')  # TODO Does it do for all cases
-        # s[start:end] = ' '
+        s = s.replace(s[start:end], '')  # TODO Does it do for all cases
         start = s.find('//')
     return s
 
@@ -51,13 +50,13 @@ def keywords_replacement(s):
     return s
 
 
-# def parse(str=None):
-print(format("""var a = 10 + 15 //k
-var b=11 % 2 //k
-func hello(x:Int)->Int
-let x =131 //ewihfio
-let `let` = 12
-func hello(_ y:Int){
-  print(y)
-}
-hello(`let`)"""))
+if __name__ == '__main__':
+    print(format("""var a = 10 + 15 //k
+    var b=11 % 2 //k
+    func hello(x:Int)->Int
+    let x =131 //ewihfio
+    let `let` = 12
+    func hello(_ y:Int){
+      print(y)
+    }
+    hello(`let`)"""))
