@@ -2,7 +2,6 @@ import unittest
 from src.LexicalAnalyzer import *
 
 class IdentifyComments(unittest.TestCase):
-
 	def test_single_comment(self):
 		initial = 'var a = 15 //igor nigor'
 		expected = 'var a = 15'
@@ -32,6 +31,11 @@ class IdentifyComments(unittest.TestCase):
 
 		self.assertEqual(expected, processed)
 
+class FormatTest(unittest.TestCase):
+	def test_simple(self):
+		initial = 'var a = 15->Int'
+		formatted = format(initial)
+		print(formatted)
 
 
 
