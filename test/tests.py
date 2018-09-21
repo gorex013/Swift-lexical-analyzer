@@ -7,7 +7,7 @@ class IdentifyComments(unittest.TestCase):
 		initial = 'var a = 15 //igor nigor'
 		expected = 'var a = 15'
 
-		processed = format_inline_comment(initial)
+		processed = ps.format_inline_comment(initial)
 		processed = processed.strip()
 
 		self.assertEqual(expected, processed)
@@ -16,7 +16,7 @@ class IdentifyComments(unittest.TestCase):
 		initial = '''Kevin likes bicycle /*\nBut his daughter likes dogs val p = 16\n*/var x = 20'''
 		expected = '''Kevin likes bicycle var x = 20'''
 
-		processed = format_multiline_comment(initial)
+		processed = ps.format_multiline_comment(initial)
 		processed = processed.strip()
 
 		self.assertEqual(expected, processed)
@@ -26,8 +26,8 @@ class IdentifyComments(unittest.TestCase):
 
 		expected = '''var bruce = "John Doe" val chuck = 'Norris'  print('doc')'''
 
-		processed = format_inline_comment(initial)
-		processed = format_multiline_comment(processed)
+		processed = ps.format_inline_comment(initial)
+		processed = ps.format_multiline_comment(processed)
 		processed = processed.strip()
 
 		self.assertEqual(expected, processed)
