@@ -34,11 +34,23 @@ class IdentifyComments(unittest.TestCase):
 class FormatTest(unittest.TestCase):
 	def test_simple(self):
 		initial = 'var a = 15->Int'
-		formatted = format(initial)
-		print(formatted)
+		tokens = format(initial)
+		expected = ['D_VAR', {'identifier': 'a'}, 'DEL_EQUAL', 'NUMERICAL', 'DEL_ARROW', 'class_INT']
+		self.assertEqual(expected, tokens)
 
+	def test_is_special(self):
+		words = ['val', 'var', '->', 'Int', 'integer', '"let"', '//', '<=']
+		expected = [False, True, True, True, False, False, False, True]
+		answers = [is_special(w) for w in words]
 
+		self.assertEqual(expected, answers)
 
+	def test_is_processed(self):
+		words = ['DEL_EQUAL', 'a', '_', 'DEL_ARROW', 'class_INT', 'operator', 'mutating'] # TODO: CAN ALTER IF A CHANGE NAMINGS
+		expected = [True, False, False, True, True, False, False]
+		answers = [is_processed(w) for w in words]
+
+		self.assertEqual(expected, answers)
 
 
 if __name__ == '__main__':
