@@ -15,7 +15,6 @@ def preprocess_comments(content):
 
 '''
 
-
 def format_multiline_comment(content):
     start = content.find('/*')
     while start != -1:
