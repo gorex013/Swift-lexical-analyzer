@@ -1,10 +1,12 @@
-from src.swift_tokens import *
 import src.preprocessor as ps
+from src.swift_tokens import *
+
 
 def format_file(src_fname):
     with open(src_fname) as f:
         content = f.read()
         return format(content)
+
 
 def format(content: str) -> list:
     comments_filtered = ps.preprocess_comments(content)
@@ -15,11 +17,29 @@ def format(content: str) -> list:
 
     return is_delimiter or is_keyword or is_operator
 
-def handle_literal(literal): #TODO: ADD NUMBER LITERALS AND STRINGS
-    return {'identifier': literal}
+
+import src.constant_literal.numerical_constant as number_literal
 
 
-def process_token(word:str) -> str:
+def handle_literal(literal):  # TODO: ADD NUMBER LITERALS AND STRINGS
+    if number_literal.is_number(literal):
+        if number_literal.is_binary(literal):
+            return {'binary_integer': literal}
+        elif number_literal.is_octal(literal):
+            return {'octal_integer': literal}
+        elif number_literal.is_hexadecimal(literal):
+            return {'hexadecimal_integer': literal}
+        elif number_literal.is_double(literal):
+            if number_literal.is_integer(literal):
+                return {'decimal_integer': literal}
+            elif number_literal.is_float(literal):
+                return {'decimal_float': literal}
+            else:
+                return {'decimal_double': literal}
+    # elif
+
+
+def process_token(word: str) -> str:
     keyword = keywords.get(word, None)
     delimiter = delimiters.get(word, None)
     operator = operators.get(word, None)
@@ -40,13 +60,15 @@ def is_special(word: str) -> bool:
     is_keyword = keywords.get(word, None)
     is_delimiter = delimiters.get(word, None)
     is_operator = operators.get(word, None)
-    return is_operator != None or is_keyword != None or is_delimiter != None
+    return is_operator is None or is_keyword is None or is_delimiter is None
+
 
 def is_processed(word: str) -> bool:
     is_keyword = word in keywords.values()
     is_delimiter = word in delimiters.values()
     is_operator = word in operators.values()
     return is_operator or is_keyword or is_delimiter
+
 
 def keywords_replacement(content: str) -> list:
     words = content.split(' ')
