@@ -1,7 +1,7 @@
 keywords = {}
 operators = {}
 delimiters = {}
-
+operators_priority = ['<=', '>=', '+=', '-=', '*=', '/=', '%=', '+', '*', '*', '-', '/', '%', '>', '<']
 # DECLARATIONS
 keywords['associatedtype'] = 'D_ASSOCIATED_TYPE'
 keywords['class'] = 'D_CLASS'
@@ -133,6 +133,11 @@ operators['>'] = 'O_BIGGER'
 operators['>='] = 'O_BIGGER_EQ'
 operators['<'] = 'O_LESS'
 operators['<='] = 'O_LESS_EQ'
+operators['*='] = 'O_MULT_EQ'
+operators['-='] = 'O_MINUTES_EQ'
+operators['+='] = 'O_PLUS_EQ'
+operators['/='] = 'O_DIV_EQ'
+operators['%='] = 'O_REMINDER_EQ'
 
 # Default classes
 keywords['Int'] = 'class_INT'

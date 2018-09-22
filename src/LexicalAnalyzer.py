@@ -6,7 +6,7 @@ def format_file(src_fname):
         content = f.read()
         return format(content)
 
-def format(content):
+def format(content: str) -> list:
     comments_filtered = ps.preprocess_comments(content)
     delimiters_escaped = ps.delimiter_spacing(comments_filtered)
     operators_escaped = ps.operator_spacing(delimiters_escaped)

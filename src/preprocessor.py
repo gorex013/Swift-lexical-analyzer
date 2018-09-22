@@ -48,6 +48,6 @@ def delimiter_spacing(content):
 
 '''
 def operator_spacing(content): # TODO: ADD PRIORITY <= first and < next
-    for key in operators.keys():
+    for key in operators_priority:
         content = content.replace(key, ' ' + operators[key] + ' ')
     return content
