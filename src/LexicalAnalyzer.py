@@ -15,7 +15,8 @@ def format(content: str) -> list:
     tokens_list = keywords_replacement(operators_escaped)
     return tokens_list
 
-    return is_delimiter or is_keyword or is_operator
+    # return is_delimiter or is_keyword or is_operator
+    # TODO: Something wrong here don't know what is it doing? What to change?
 
 
 import src.constant_literal.numeric_constant as number_literal
