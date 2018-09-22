@@ -3,14 +3,19 @@ from src.swift_tokens import *
 '''
 
 '''
+
+
 def preprocess_comments(content):
     multiline_cleaned = format_multiline_comment(content)
     inline_cleaned = format_inline_comment(multiline_cleaned)
     return inline_cleaned
 
+
 '''
 
 '''
+
+
 def format_multiline_comment(content):
     start = content.find('/*')
     while start != -1:
@@ -20,9 +25,12 @@ def format_multiline_comment(content):
         start = content.find('/*')
     return content
 
+
 '''
 
 '''
+
+
 def format_inline_comment(content):
     start = content.find('//')
     while start != -1:
@@ -36,18 +44,24 @@ def format_inline_comment(content):
         start = content.find('//')
     return content
 
+
 '''
 
 '''
+
+
 def delimiter_spacing(content):
     for key in delimiters.keys():
         content = content.replace(key, ' ' + delimiters[key] + ' ')
     return content
 
+
 '''
 
 '''
-def operator_spacing(content): # TODO: ADD PRIORITY <= first and < next
+
+
+def operator_spacing(content):  # TODO: ADD PRIORITY <= first and < next
     for key in operators_priority:
         content = content.replace(key, ' ' + operators[key] + ' ')
     return content
