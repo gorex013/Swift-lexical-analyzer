@@ -16,13 +16,15 @@ def format(content: str) -> list:
     return tokens_list
 
     # return is_delimiter or is_keyword or is_operator
-    # TODO: Something wrong here don't know what is it doing? What to change?
+    # TODO: Something wrong here, I don't know what is it doing? What to change?
 
 
 import src.constant_literal.numeric_constant as number_literal
+import src.constant_literal.string_constant as string_literal
 
 
-def handle_literal(literal):  # TODO: ADD NUMBER LITERALS AND STRINGS
+def handle_literal(literal):  # TODO: Not sure about multi-line string in swift.
+    # On `repl.it` swift doesn't recognize multi-line strings
     if number_literal.is_number(literal):
         if number_literal.is_binary(literal):
             return {'binary_integer': literal}
@@ -37,7 +39,8 @@ def handle_literal(literal):  # TODO: ADD NUMBER LITERALS AND STRINGS
                 return {'decimal_float': literal}
             else:
                 return {'decimal_double': literal}
-    # elif
+    elif string_literal.is_string(literal):
+        return {'inline_string': literal}
 
 
 def process_token(word: str) -> str:
