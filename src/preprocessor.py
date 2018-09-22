@@ -1,4 +1,4 @@
-from src.swift_tokens import delimiters, operators
+from src.swift_tokens import *
 
 '''
 
