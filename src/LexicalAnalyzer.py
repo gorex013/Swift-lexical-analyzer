@@ -18,7 +18,7 @@ def format(content: str) -> list:
     return is_delimiter or is_keyword or is_operator
 
 
-import src.constant_literal.numerical_constant as number_literal
+import src.constant_literal.numeric_constant as number_literal
 
 
 def handle_literal(literal):  # TODO: ADD NUMBER LITERALS AND STRINGS
@@ -48,11 +48,11 @@ def process_token(word: str) -> str:
     if truth > 1 or truth == 0:
         raise Exception("Tokens meaning exception: IS IT EVEN POSSIBLE?")
 
-    if keyword != None:
+    if keyword is not None:
         return keyword
-    elif delimiter != None:
+    elif delimiter is not None:
         return delimiter
-    elif operator != None:
+    elif operator is not None:
         return operator
 
 
@@ -60,7 +60,7 @@ def is_special(word: str) -> bool:
     is_keyword = keywords.get(word, None)
     is_delimiter = delimiters.get(word, None)
     is_operator = operators.get(word, None)
-    return is_operator is None or is_keyword is None or is_delimiter is None
+    return is_operator is not None or is_keyword is not None or is_delimiter is not None
 
 
 def is_processed(word: str) -> bool:
