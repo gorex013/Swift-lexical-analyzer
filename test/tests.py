@@ -1,5 +1,7 @@
 import unittest
 from src.LexicalAnalyzer import *
+from src.preprocessor import *
+from src.swift_tokens import *
 
 class IdentifyComments(unittest.TestCase):
 	def test_single_comment(self):
@@ -51,7 +53,34 @@ class IdentifyComments(unittest.TestCase):
 class StringLiterals(unittest.TestCase):
 	def test_inline(self):
 		initial = 'print("Doctor \(dc_name), I don`t feel legs!")'
-		expected =
+		expected = 'print(TEMP0)'
+		expected_literal = {string_literals['inline']: '"Doctor \(dc_name), I don`t feel legs!"'}
+		formatted = format_inline_strings(initial)
+
+		self.assertEqual(expected, formatted)
+		self.assertEqual(retrieve('TEMP0'), expected_literal)
+
+	def test_multiline(self):
+		initial = 'initial dog is """KKK clan"""'
+		expected = 'initial dog is TEMP0'
+		expected_literal = {string_literals['multiline']: '"""KKK clan"""'}
+		formatted = format_multiline_strings(initial)
+
+		self.assertEqual(expected, formatted)
+		self.assertEqual(retrieve('TEMP0'), expected_literal)
+
+	def test_complex(self):
+		with open('complex_string_literals.swift') as f:
+			content = f.read()
+		expected = 'var a = TEMP0\nlet b = TEMP1'
+		expected_literals = [{string_literals['multiline']: '"""KKK clan"""'},
+							 {string_literals['inline']: '"Doctor who?"'}]
+
+		formatted = format_strings(content)
+		actual_literals = [retrieve('TEMP0'), retrieve('TEMP1')]
+
+		self.assertEqual(expected, formatted)
+		self.assertEqual(expected_literals, actual_literals)
 
 class FormatTest(unittest.TestCase):
 	def test_simple(self):
@@ -75,7 +104,6 @@ class FormatTest(unittest.TestCase):
 		self.assertEqual(expected, answers)
 
 	def test_swift_file(self):
-		content = ''
 		with open('BTree.swift') as f:
 			content = f.read()
 		tokens = format(content)

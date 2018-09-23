@@ -78,15 +78,17 @@ def operator_spacing(content):  # TODO: ADD PRIORITY <= first and < next
     return content
 
 def format_strings(content):
-    inline = format_inline_strings(content)
-    multiline = format_multiline_strings(inline)
-    return multiline
+    multiline = format_multiline_strings(content)
+    inline = format_inline_strings(multiline)
+    return inline
 
 def format_inline_strings(content):
     start = content.find('"')
+    shift = len('"')
     while start != -1:
-        end = content.find('"') + len('"')
+        end = start + shift +  content[start + len('"'):].find('"') + shift
         string_literal = content[start:end]
+
         global temp_id
         new_word = store({string_literals['inline']: string_literal})
         content = content.replace(string_literal, new_word)
@@ -95,11 +97,22 @@ def format_inline_strings(content):
 
 def format_multiline_strings(content):
     start = content.find('"""')
+    shift = len('"""')
     while start != -1:
-        end = content.find('"""') + len('"""')
+        end = start + shift + content[start + shift:].find('"""') + shift
         string_literal = content[start:end]
+
         global temp_id
         new_word = store({string_literals['multiline']: string_literal})
         content = content.replace(string_literal, new_word)
         start = content.find('"""')
     return content
+
+if __name__ == '__main__':
+    s = 'doc "pedigri" docs'
+    a = s.find('"')
+    shift = + len('"')
+    b = a + shift + s[a + shift:].find('"') + shift
+    c = a + shift + s[a + shift:].find('"') + shift
+    print(s[a:b])
+    print(s[a:c])
