@@ -1,11 +1,15 @@
-from src.swift_tokens import *
+import sys
+sys.path.append('..')
+
+from swift_tokens import *
+
 
 temp_id = 0  # Stores current index of last item in a storage
 storage = {}  # Storage for literals
 
-
 # Sometimes we can meet print("val a = \(a)")
 # This way we hide literals from post-processing by delimiters/operators/keywords, etc.
+
 
 def store(structure):
     """

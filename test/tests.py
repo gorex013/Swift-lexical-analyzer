@@ -1,4 +1,11 @@
+import sys
+sys.path.insert(0, sys.path[0]+'/Swift-lexical-analyzer')
+sys.path.append('../src/')
+
 import unittest
+from LexicalAnalyzer import *
+import preprocessing.string_literals as str_lit
+import preprocessing.comments as com
 
 from src.LexicalAnalyzer import *
 from src.swift_tokens import *
@@ -79,10 +86,12 @@ class StringLiterals(unittest.TestCase):
         self.assertEqual(expected_literals, actual_literals)
 
 
+
 class FormatTest(unittest.TestCase):
+
     def test_simple(self):
         initial = 'var a = 15->Int'
-        tokens = format(initial)
+        tokens = process(initial)
         expected = ['D_VAR', {'identifier': 'a'}, 'DEL_EQUAL', {'decimal_integer': '15'}, 'DEL_ARROW', 'class_INT']
         self.assertEqual(expected, tokens)
 

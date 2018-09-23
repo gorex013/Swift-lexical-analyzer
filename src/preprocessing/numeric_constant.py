@@ -155,7 +155,7 @@ def parse_binary(input_string: str):
     if input_string == '' or input_string is None:
         return ''
     result = ''
-    if input_string[0] == '0' and input_string[1] == 'b':
+    if len(input_string) > 1 and input_string[0] == '0' and input_string[1] == 'b':
         result = '0b'
         for c in input_string[2:]:
             if c in binary:
@@ -185,7 +185,7 @@ def parse_octal(input_string: str):
     if input_string == '' or input_string is None:
         return ''
     result = ''
-    if input_string[0] == '0' and input_string[1] == 'o':
+    if len(input_string) > 1 and input_string[0] == '0' and input_string[1] == 'o':
         result = '0o'
         for c in input_string[2:]:
             if c in octal:
@@ -209,7 +209,7 @@ def parse_hexadecimal(input_string: str):
     if input_string == '' or input_string is None:
         return ''
     result = ''
-    if input_string[0] == '0' and input_string[1] == 'x':
+    if len(input_string) > 1 and input_string[0] == '0' and input_string[1] == 'x':
         result = '0x'
         for c in input_string[2:]:
             if c in hexadecimal:
