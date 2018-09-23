@@ -89,8 +89,7 @@ def keywords_replacement(content: str) -> list:
         elif is_special(words[i]):
             words[i] = process_token(words[i])
         else:
-            print(type(i))
-            words[i] = handle_literal(words[i])[0]  # TODO: Maybe there's another way to fix it
+            words[i] = handle_literal(words[i])  # TODO: Maybe there's another way to fix it
         return words
 
 
