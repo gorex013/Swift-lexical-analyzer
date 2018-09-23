@@ -1,8 +1,11 @@
-import src.preprocessing.string_literals as str_lit
-import src.preprocessing.comments as com
-import src.preprocessing.escaping as esc
-from src.swift_tokens import *
-import src.preprocessing.numeric_constant as number_literal
+import sys
+sys.path.insert(0, sys.path[0]+'/Swift-lexical-analyzer')
+
+import preprocessing.string_literals as str_lit
+import preprocessing.comments as com
+import preprocessing.escaping as esc
+from swift_tokens import *
+import preprocessing.numeric_constant as number_literal
 import argparse
 
 
@@ -123,7 +126,7 @@ def keywords_replacement(content: str) -> list:
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Lexical analyzer')
     parser.add_argument('input', metavar='in', type=str,
-                        help='Full path to file to process by Swift Lexical analyzer')
+                        help='Full or relative (according to project folder) path  to file to process by Swift Lexical analyzer')
     parser.add_argument('output', metavar='out', type=str,
                         help='Path to store tokens')
 
