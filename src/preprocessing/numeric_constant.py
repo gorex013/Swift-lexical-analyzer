@@ -226,6 +226,12 @@ def is_hexadecimal(input_string: str):
     return len(hexadecimal_) == len(input_string) and input_string != '' and input_string is not None
 
 
+"""
+`is_number` checks whether the string is a decimal, binary, octal, hexadecimal integer 
+or floating point number(double).
+"""
+
+
 def is_number(input_string: str):
     double_ = is_double(input_string)
     binary_ = is_binary(input_string)
