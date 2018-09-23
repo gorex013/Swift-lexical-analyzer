@@ -41,6 +41,8 @@ def handle_literal(literal):  # TODO: Not sure about multi-line string in swift.
                 return {'decimal_double': literal}
     elif string_literal.is_string(literal):
         return {'inline_string': literal}
+    else:
+        return {'unknown_literal': literal}
 
 
 def process_token(word: str) -> str:
@@ -87,9 +89,9 @@ def keywords_replacement(content: str) -> list:
         elif is_special(words[i]):
             words[i] = process_token(words[i])
         else:
-            words[i] = handle_literal(words[i])
-
-    return words
+            print(type(i))
+            words[i] = handle_literal(words[i])[0]  # TODO: Maybe there's another way to fix it
+        return words
 
 
 if __name__ == '__main__':

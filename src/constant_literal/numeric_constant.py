@@ -3,7 +3,9 @@ import string
 decimal = [i for i in string.digits]
 
 
-def parse_natural(s=''):
+def parse_natural(s: str):
+    if s == '' or s is None:
+        return ''
     result = ''
     for c in s:
         if c in decimal:
@@ -13,12 +15,12 @@ def parse_natural(s=''):
     return result
 
 
-def is_natural(s):
-    return len(parse_natural(s) == len(s))
+def is_natural(s: str):
+    return len(parse_natural(s)) == len(s)
 
 
-def parse_integer(s=''):
-    if s == '':
+def parse_integer(s: str):
+    if s == '' or s is None:
         return ''
     if s[0] == '-':
         result = '-' + parse_natural(s[1:])
@@ -32,12 +34,12 @@ def parse_integer(s=''):
         return result
 
 
-def is_integer(s):
+def is_integer(s: str):
     return len(parse_integer(s)) == len(s)
 
 
-def parse_float(s=''):
-    if s == '':
+def parse_float(s: str):
+    if s == '' or s is None:
         return ''
     left = parse_integer(s)
     right = ''
@@ -57,8 +59,8 @@ def is_float(s):
     return len(parse_float(s)) == len(s)
 
 
-def parse_double(s=''):
-    if s == '':
+def parse_double(s: str):
+    if s == '' or s is None:
         return ''
     left = parse_float(s)
     right = ''
@@ -74,14 +76,14 @@ def parse_double(s=''):
         return left + right
 
 
-def is_double(s):
+def is_double(s: str):
     return len(parse_double(s)) == len(s)
 
 
 binary = ['0', '1']
 
 
-def parse_binary(s):
+def parse_binary(s: str):
     result = ''
     if s[0] == '0' and s[1] == 'b':
         for c in s[2:]:
@@ -92,14 +94,14 @@ def parse_binary(s):
         return result
 
 
-def is_binary(s):
+def is_binary(s: str):
     return len(parse_binary(s)) == len(s)
 
 
 octal = [i for i in string.octdigits]
 
 
-def parse_octal(s):
+def parse_octal(s: str):
     result = ''
     if s[0] == '0' and s[1] == 'o':
         for c in s[2:]:
@@ -110,14 +112,14 @@ def parse_octal(s):
         return result
 
 
-def is_octal(s):
+def is_octal(s: str):
     return len(parse_octal(s)) == len(s)
 
 
 hexadecimal = [i for i in string.hexdigits]
 
 
-def parse_hexadecimal(s):
+def parse_hexadecimal(s: str):
     result = ''
     if s[0] == '0' and s[1] == 'x':
         for c in s[2:]:
@@ -128,9 +130,9 @@ def parse_hexadecimal(s):
         return result
 
 
-def is_hexadecimal(s):
+def is_hexadecimal(s: str):
     return len(parse_hexadecimal(s)) == len(s)
 
 
-def is_number(s):
+def is_number(s: str):
     return is_double(s) or is_binary(s) or is_octal(s) or is_hexadecimal(s)
