@@ -76,7 +76,6 @@ def keywords_replacement(content: str) -> list:
             words[i] = handle_literal(words[i]) # TODO: Maybe there's another way to fix it
     return words
 
-
 if __name__ == '__main__':
     with open('swift_examples/BTree.swift') as f:
         content = f.read()
