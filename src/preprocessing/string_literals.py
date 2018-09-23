@@ -30,7 +30,7 @@ def format_inline_strings(content):
         string_literal = content[start:end]
 
         global temp_id
-        literal_index = store('inline_literal.({})'.format(string_literal))
+        literal_index = store({string_literals['inline']: string_literal})
         content = content.replace(string_literal, literal_index)
         start = content.find('"')
     return content
@@ -43,7 +43,7 @@ def format_multiline_strings(content):
         string_literal = content[start:end]
 
         global temp_id
-        literal_index = store('multiline_literal.({})'.format(string_literal))
+        literal_index = store({string_literals['multiline']: string_literal})
         content = content.replace(string_literal, literal_index)
         start = content.find('"""')
     return content

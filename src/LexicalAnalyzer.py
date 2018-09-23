@@ -25,7 +25,7 @@ def handle_literal(literal: str):
     elif 'TEMP' in literal: #TODO: more explanation
         return str_lit.retrieve(literal)
     else:
-        return 'identifier.({})'.format(literal)
+        return {'identifier': literal}
 
 
 

@@ -1,6 +1,9 @@
 import unittest
 from src.LexicalAnalyzer import *
-from src.preprocessing.string_literals import *
+import src.preprocessing.string_literals as str_lit
+import src.preprocessing.comments as com
+import src.preprocessing.escaping as esc
+
 from src.swift_tokens import *
 
 class IdentifyComments(unittest.TestCase):
@@ -8,7 +11,7 @@ class IdentifyComments(unittest.TestCase):
 		initial = 'var a = 15 //igor nigor'
 		expected = 'var a = 15'
 
-		processed = ps.format_inline_comment(initial)
+		processed = com.format_inline_comment(initial)
 		processed = processed.strip()
 
 		self.assertEqual(expected, processed)
@@ -17,7 +20,7 @@ class IdentifyComments(unittest.TestCase):
 		initial = '''Kevin likes bicycle /*\nBut his daughter likes dogs val p = 16\n*/var x = 20'''
 		expected = '''Kevin likes bicycle var x = 20'''
 
-		processed = ps.format_multiline_comment(initial)
+		processed = com.format_multiline_comment(initial)
 		processed = processed.strip()
 
 		self.assertEqual(expected, processed)
@@ -27,40 +30,52 @@ class IdentifyComments(unittest.TestCase):
 
 		expected = '''var bruce = "John Doe" val chuck = 'Norris'  print('doc')'''
 
-		processed = ps.format_inline_comment(initial)
-		processed = ps.format_multiline_comment(processed)
+		processed = com.format_inline_comment(initial)
+		processed = com.format_multiline_comment(processed)
 		processed = processed.strip()
 
 		self.assertEqual(expected, processed)
 
+
+def reinitialize_storage():
+	str_lit.storage = {}  # Reinitialize storage
+	str_lit.temp_id = 0
+
+
 class StringLiterals(unittest.TestCase):
 	def test_inline(self):
+		reinitialize_storage()
+
 		initial = 'print("Doctor \(dc_name), I don`t feel legs!")'
 		expected = 'print(TEMP0)'
 		expected_literal = {string_literals['inline']: '"Doctor \(dc_name), I don`t feel legs!"'}
-		formatted = format_inline_strings(initial)
+		formatted = str_lit.format_inline_strings(initial)
 
 		self.assertEqual(expected, formatted)
-		self.assertEqual(retrieve('TEMP0'), expected_literal)
+		self.assertEqual(str_lit.retrieve('TEMP0'), expected_literal)
 
 	def test_multiline(self):
+		reinitialize_storage()
+
 		initial = 'initial dog is """KKK clan"""'
 		expected = 'initial dog is TEMP0'
 		expected_literal = {string_literals['multiline']: '"""KKK clan"""'}
-		formatted = format_multiline_strings(initial)
+		formatted = str_lit.format_multiline_strings(initial)
 
 		self.assertEqual(expected, formatted)
-		self.assertEqual(retrieve('TEMP0'), expected_literal)
+		self.assertEqual(str_lit.retrieve('TEMP0'), expected_literal)
 
 	def test_complex(self):
-		with open('complex_string_literals.swift') as f:
+		reinitialize_storage()
+
+		with open('swift_examples/complex_string_literals.swift') as f:
 			content = f.read()
 		expected = 'var a = TEMP0\nlet b = TEMP1'
 		expected_literals = [{string_literals['multiline']: '"""KKK clan"""'},
 							 {string_literals['inline']: '"Doctor who?"'}]
 
-		formatted = format_strings(content)
-		actual_literals = [retrieve('TEMP0'), retrieve('TEMP1')]
+		formatted = str_lit.format_strings(content)
+		actual_literals = [str_lit.retrieve('TEMP0'), str_lit.retrieve('TEMP1')]
 
 		self.assertEqual(expected, formatted)
 		self.assertEqual(expected_literals, actual_literals)
@@ -69,7 +84,7 @@ class FormatTest(unittest.TestCase):
 	def test_simple(self):
 		initial = 'var a = 15->Int'
 		tokens = format(initial)
-		expected = ['D_VAR', 'identifier.(a)', 'DEL_EQUAL', 'decimal_integer.(15)', 'DEL_ARROW', 'class_INT']
+		expected = ['D_VAR', {'identifier': 'a'}, 'DEL_EQUAL', {'decimal_integer': '15'}, 'DEL_ARROW', 'class_INT']
 		self.assertEqual(expected, tokens)
 
 	def test_is_special(self):
