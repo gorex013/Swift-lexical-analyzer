@@ -1,7 +1,6 @@
-import src.preprocessor as ps
+import src.preprocessing.preprocessor as ps
 from src.swift_tokens import *
-import src.constant_literal.numeric_constant as number_literal
-import src.constant_literal.string_constant as string_literal
+import src.preprocessing.numeric_constant as number_literal
 
 def format_file(src_fname):
     with open(src_fname) as f:
@@ -17,14 +16,14 @@ def format(content: str) -> list:
     tokens_list = keywords_replacement(operators_escaped)
     return tokens_list
 
-def handle_literal(literal):  # TODO: Not sure about multi-line string in swift.
+def handle_literal(literal: str):
     # On `repl.it` swift doesn't recognize multi-line strings
     if number_literal.is_number(literal):
         return number_literal.handle_number(literal)
-    elif string_literal.is_string(literal):
-        return {'inline_string': literal}
+    elif 'TEMP' in literal: #TODO: more explanation
+        return ps.retrieve(literal)
     else:
-        return {'unknown_literal': literal}
+        return 'identifier.({})'.format(literal)
 
 
 
@@ -67,9 +66,6 @@ def keywords_replacement(content: str) -> list:
     words = [w for w in words if w is not '']
 
     for i in range(len(words)):
-        if words[i] in 'return':
-            print('?')
-
         if is_processed(words[i]):
             continue
         elif is_special(words[i]):
