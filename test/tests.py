@@ -2,13 +2,9 @@ import unittest
 from src.LexicalAnalyzer import *
 import src.preprocessing.string_literals as str_lit
 import src.preprocessing.comments as com
+import src.preprocessing.escaping as esc
+
 from src.swift_tokens import *
-
-
-def reinitialize_storage():
-	str_lit.storage = {}  # Reinitialize storage
-	str_lit.temp_id = 0
-
 
 class IdentifyComments(unittest.TestCase):
 	def test_single_comment(self):
@@ -41,7 +37,9 @@ class IdentifyComments(unittest.TestCase):
 		self.assertEqual(expected, processed)
 
 
-
+def reinitialize_storage():
+	str_lit.storage = {}  # Reinitialize storage
+	str_lit.temp_id = 0
 
 
 class StringLiterals(unittest.TestCase):
@@ -82,11 +80,10 @@ class StringLiterals(unittest.TestCase):
 		self.assertEqual(expected, formatted)
 		self.assertEqual(expected_literals, actual_literals)
 
-
 class FormatTest(unittest.TestCase):
 	def test_simple(self):
 		initial = 'var a = 15->Int'
-		tokens = process(initial)
+		tokens = format(initial)
 		expected = ['D_VAR', {'identifier': 'a'}, 'DEL_EQUAL', {'decimal_integer': '15'}, 'DEL_ARROW', 'class_INT']
 		self.assertEqual(expected, tokens)
 
@@ -98,12 +95,11 @@ class FormatTest(unittest.TestCase):
 		self.assertEqual(expected, answers)
 
 	def test_is_processed(self):
-		words = ['DEL_EQUAL', 'a', '_', 'DEL_ARROW', 'class_INT', 'operator', 'mutating']  # TODO: CAN ALTER IF NAMINGS CHANGE
+		words = ['DEL_EQUAL', 'a', '_', 'DEL_ARROW', 'class_INT', 'operator', 'mutating'] # TODO: CAN ALTER IF NAMINGS CHANGE
 		expected = [True, False, False, True, True, False, False]
 		answers = [is_processed(w) for w in words]
 
 		self.assertEqual(expected, answers)
-
 
 if __name__ == '__main__':
 	unittest.main()
