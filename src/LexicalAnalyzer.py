@@ -1,8 +1,8 @@
-import src.preprocessing.string_literals as str_lit
 import src.preprocessing.comments as com
 import src.preprocessing.escaping as esc
-from src.swift_tokens import *
 import src.preprocessing.numeric_constant as number_literal
+import src.preprocessing.string_literals as str_lit
+from src.swift_tokens import *
 
 
 def format_file(src_fname):
@@ -117,6 +117,7 @@ def keywords_replacement(content: str) -> list:
         else:
             words[i] = handle_literal(words[i])
     return words
+
 
 if __name__ == '__main__':
     with open('swift_examples/BTree.swift') as f:

@@ -1,5 +1,6 @@
 from src.swift_tokens import *
 
+
 def delimiter_spacing(content):
     """
     Method provides spaces between delimiters and converts them into end representation

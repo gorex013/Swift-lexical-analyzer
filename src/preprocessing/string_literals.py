@@ -3,6 +3,7 @@ from src.swift_tokens import *
 temp_id = 0  # Stores current index of last item in a storage
 storage = {}  # Storage for literals
 
+
 # Sometimes we can meet print("val a = \(a)")
 # This way we hide literals from post-processing by delimiters/operators/keywords, etc.
 
@@ -18,6 +19,7 @@ def store(structure):
     storage[name] = structure
     temp_id += 1
     return name
+
 
 def retrieve(name):
     """
@@ -39,6 +41,7 @@ def format_strings(content):
     inline = format_inline_strings(multiline)
     return inline
 
+
 def format_inline_strings(content):
     """
     Method converts inline string literals into TEMP#
@@ -56,6 +59,7 @@ def format_inline_strings(content):
         content = content.replace(string_literal, literal_index)
         start = content.find('"')
     return content
+
 
 def format_multiline_strings(content):
     """
