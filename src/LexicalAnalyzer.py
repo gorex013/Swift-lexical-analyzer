@@ -76,14 +76,9 @@ def keywords_replacement(content: str) -> list:
 
 
 if __name__ == '__main__':
-    tokens = format("""struct Stack<Element> {
-    var items = [Element]()
-    mutating func push(_ item: Element) {
-        items.append(item)
-    }
-    mutating func pop() -> Element {
-        return items.removeLast()
-    }
-}""")
-    for _ in tokens:
-        print(_)
+    with open('swift_examples/BTree.swift') as f:
+        content = f.read()
+    tokens = format(content)
+    with open('swift_examples/out.txt', 'w') as f:
+        for token in tokens:
+            f.write("{}\n".format(token))

@@ -1,6 +1,6 @@
 import unittest
 from src.LexicalAnalyzer import *
-from src.preprocessor import *
+from src.preprocessing.preprocessor import *
 from src.swift_tokens import *
 
 class IdentifyComments(unittest.TestCase):
@@ -32,23 +32,6 @@ class IdentifyComments(unittest.TestCase):
 		processed = processed.strip()
 
 		self.assertEqual(expected, processed)
-
-	def test_complex_comments2(self):
-		initial = """  /**
-   *  Moves the key at the specified `index` from `node` to
-   *  the `targetNode` at `position`
-   *
-   *  - Parameters:
-   *    - index: the index of the key to be moved in `node`
-   *    - targetNode: the node to move the key into
-   *    - node: the node to move the key from
-   *    - position: the position of the from node relative to the targetNode
-   */
-  private func move(keyAtIndex index: Int, to targetNode: BTreeNode,
-                                  from node: BTreeNode, at position: BTreeNodePosition) {
-    switch position {"""
-		processed = format(initial)
-		print(processed)
 
 class StringLiterals(unittest.TestCase):
 	def test_inline(self):
@@ -97,20 +80,11 @@ class FormatTest(unittest.TestCase):
 		self.assertEqual(expected, answers)
 
 	def test_is_processed(self):
-		words = ['DEL_EQUAL', 'a', '_', 'DEL_ARROW', 'class_INT', 'operator', 'mutating'] # TODO: CAN ALTER IF A CHANGE NAMINGS
+		words = ['DEL_EQUAL', 'a', '_', 'DEL_ARROW', 'class_INT', 'operator', 'mutating'] # TODO: CAN ALTER IF NAMINGS CHANGE
 		expected = [True, False, False, True, True, False, False]
 		answers = [is_processed(w) for w in words]
 
 		self.assertEqual(expected, answers)
-
-	def test_swift_file(self):
-		with open('BTree.swift') as f:
-			content = f.read()
-		tokens = format(content)
-		with open('out.txt', 'w') as f:
-			for token in tokens:
-				f.write("{}\n".format(token))
-
 
 if __name__ == '__main__':
 	unittest.main()
