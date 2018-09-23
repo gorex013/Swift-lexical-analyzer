@@ -3,6 +3,7 @@ sys.path.append('..')
 
 from swift_tokens import *
 
+
 def delimiter_spacing(content):
     """
     Method provides spaces between delimiters and converts them into end representation

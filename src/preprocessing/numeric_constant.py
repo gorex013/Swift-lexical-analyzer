@@ -10,7 +10,8 @@ import string
 
 decimal = [i for i in string.digits]
 
-def handle_number(literal):
+
+def handle_number(literal):  # The method classifies the literal as number literal is possible
     if is_binary(literal):
         return {'binary_integer': literal}
     elif is_octal(literal):
@@ -25,6 +26,14 @@ def handle_number(literal):
         else:
             return {'decimal_double': literal}
     raise Exception("How did you come here?")
+
+
+"""
+The method `parse_natural` takes as input a string literal and 
+appends to the result characters of input until these aren't decimals.
+Next one, `is_natural` checks if the input string is a natural number. 
+Returns false in case there are non decimal characters.
+"""
 
 
 def parse_natural(input_string: str):
@@ -42,6 +51,13 @@ def parse_natural(input_string: str):
 def is_natural(input_string: str):
     natural = parse_natural(input_string)
     return len(natural) == len(input_string) and input_string != '' and input_string is not None
+
+
+"""
+For `parse_integer` is the same as for `parse_natural` but the sign is a part of the number.
+Integer format is Integer = '+|-' + Natural.
+Check an integer with `is_integer` yields true if it was full parsed successfully.
+"""
 
 
 def parse_integer(input_string: str):
@@ -66,6 +82,14 @@ def is_integer(input_string: str):
     return len(integer) == len(input_string) and input_string != '' and input_string is not None
 
 
+"""
+The float structure is Float = Integer + '.' + Natural. 
+Method `parse_float` yields an Integer or Integer + '.' + Natural.
+doesn't allow '-.1' that would be '-0.1', and there is at most one dot after digit and 
+at most one sign before number. Method `is_float` checks if it the same structure as float.
+"""
+
+
 def parse_float(input_string: str):
     if input_string == '' or input_string is None:
         return ''
@@ -86,6 +110,14 @@ def parse_float(input_string: str):
 def is_float(input_string):
     s = parse_float(input_string)
     return len(s) == len(input_string) and input_string != '' and input_string is not None
+
+
+"""
+Double has next structure
+Double = Float + 'e|E' + Integer.
+`is_double` method checks if the number is built correctly as the structure shows.
+`parse_double` returns a Float or a Float + 'E|e' + Integer.
+"""
 
 
 def parse_double(input_string: str):
@@ -112,6 +144,12 @@ def is_double(input_string: str):
 
 binary = ['0', '1']
 
+"""
+`parse_binary` must execute only when the integer starts with '0b'
+It stops at the first non-binary character. 
+`is_binary` checks if the number is represented correctly.
+"""
+
 
 def parse_binary(input_string: str):
     if input_string == '' or input_string is None:
@@ -130,11 +168,17 @@ def parse_binary(input_string: str):
 
 
 def is_binary(input_string: str):
-    binary = parse_binary(input_string)
-    return len(binary) == len(input_string) and input_string != '' and input_string is not None
+    binary_ = parse_binary(input_string)
+    return len(binary_) == len(input_string) and input_string != '' and input_string is not None
 
 
 octal = [i for i in string.octdigits]
+
+"""
+`parse_octal` is executed when string starts with '0o'.
+It stops at the first non-octal character.
+`is_binary checks if the octal integer is correctly represented in the octal system
+"""
 
 
 def parse_octal(input_string: str):
@@ -154,8 +198,8 @@ def parse_octal(input_string: str):
 
 
 def is_octal(input_string: str):
-    octal = parse_octal(input_string)
-    return len(octal) == len(input_string) and input_string != '' and input_string is not None
+    octal_ = parse_octal(input_string)
+    return len(octal_) == len(input_string) and input_string != '' and input_string is not None
 
 
 hexadecimal = [i for i in string.hexdigits]

@@ -8,6 +8,7 @@ def preprocess_comments(content):
     inline_cleaned = format_inline_comment(multiline_cleaned)
     return inline_cleaned
 
+
 def format_multiline_comment(content):
     """
     Method removes multiline comments (/* example */)
@@ -21,6 +22,7 @@ def format_multiline_comment(content):
         content = content.replace(comment, '')
         start = content.find('/*')
     return content
+
 
 def format_inline_comment(content):
     """
