@@ -2,7 +2,6 @@ import string
 
 decimal = [i for i in string.digits]
 
-
 def handle_number(literal):
     if is_binary(literal):
         return {'binary_integer': literal}
