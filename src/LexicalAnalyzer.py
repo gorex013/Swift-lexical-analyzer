@@ -1,6 +1,7 @@
 import src.preprocessor as ps
 from src.swift_tokens import *
-
+import src.constant_literal.numeric_constant as number_literal
+import src.constant_literal.string_constant as string_literal
 
 def format_file(src_fname):
     with open(src_fname) as f:
@@ -10,39 +11,21 @@ def format_file(src_fname):
 
 def format(content: str) -> list:
     comments_filtered = ps.preprocess_comments(content)
-    delimiters_escaped = ps.delimiter_spacing(comments_filtered)
+    formatted_strings = ps.format_strings(comments_filtered)
+    delimiters_escaped = ps.delimiter_spacing(formatted_strings)
     operators_escaped = ps.operator_spacing(delimiters_escaped)
     tokens_list = keywords_replacement(operators_escaped)
     return tokens_list
 
-    # return is_delimiter or is_keyword or is_operator
-    # TODO: Something wrong here, I don't know what is it doing? What to change?
-
-
-import src.constant_literal.numeric_constant as number_literal
-import src.constant_literal.string_constant as string_literal
-
-
 def handle_literal(literal):  # TODO: Not sure about multi-line string in swift.
     # On `repl.it` swift doesn't recognize multi-line strings
     if number_literal.is_number(literal):
-        if number_literal.is_binary(literal):
-            return {'binary_integer': literal}
-        elif number_literal.is_octal(literal):
-            return {'octal_integer': literal}
-        elif number_literal.is_hexadecimal(literal):
-            return {'hexadecimal_integer': literal}
-        elif number_literal.is_double(literal):
-            if number_literal.is_integer(literal):
-                return {'decimal_integer': literal}
-            elif number_literal.is_float(literal):
-                return {'decimal_float': literal}
-            else:
-                return {'decimal_double': literal}
+        return number_literal.handle_number(literal)
     elif string_literal.is_string(literal):
         return {'inline_string': literal}
     else:
         return {'unknown_literal': literal}
+
 
 
 def process_token(word: str) -> str:
@@ -84,14 +67,16 @@ def keywords_replacement(content: str) -> list:
     words = [w for w in words if w is not '']
 
     for i in range(len(words)):
+        if words[i] in 'return':
+            print('?')
+
         if is_processed(words[i]):
             continue
         elif is_special(words[i]):
             words[i] = process_token(words[i])
         else:
-            print(type(i))
-            words[i] = handle_literal(words[i])[0]  # TODO: Maybe there's another way to fix it
-        return words
+            words[i] = handle_literal(words[i]) # TODO: Maybe there's another way to fix it
+    return words
 
 
 if __name__ == '__main__':

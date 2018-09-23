@@ -3,6 +3,22 @@ import string
 decimal = [i for i in string.digits]
 
 
+def handle_number(literal):
+    if is_binary(literal):
+        return {'binary_integer': literal}
+    elif is_octal(literal):
+        return {'octal_integer': literal}
+    elif is_hexadecimal(literal):
+        return {'hexadecimal_integer': literal}
+    elif is_double(literal):
+        if is_integer(literal):
+            return {'decimal_integer': literal}
+        elif is_float(literal):
+            return {'decimal_float': literal}
+        else:
+            return {'decimal_double': literal}
+    raise Exception("How did you come here?")
+
 def parse_natural(s: str):
     if s == '' or s is None:
         return ''
@@ -16,7 +32,10 @@ def parse_natural(s: str):
 
 
 def is_natural(s: str):
-    return len(parse_natural(s)) == len(s)
+    natural = parse_natural(s)
+    if natural is None:
+        return False
+    return len(natural) == len(s)
 
 
 def parse_integer(s: str):
@@ -35,7 +54,10 @@ def parse_integer(s: str):
 
 
 def is_integer(s: str):
-    return len(parse_integer(s)) == len(s)
+    integer = parse_integer(s)
+    if integer is None:
+        return False
+    return len(integer) == len(s)
 
 
 def parse_float(s: str):
@@ -56,7 +78,10 @@ def parse_float(s: str):
 
 
 def is_float(s):
-    return len(parse_float(s)) == len(s)
+    float_n = parse_float(s)
+    if float_n is None:
+        return False
+    return len(float_n) == len(s)
 
 
 def parse_double(s: str):
@@ -77,7 +102,10 @@ def parse_double(s: str):
 
 
 def is_double(s: str):
-    return len(parse_double(s)) == len(s)
+    double = parse_double(s)
+    if double is None:
+        return False
+    return len(double) == len(s)
 
 
 binary = ['0', '1']
@@ -85,17 +113,21 @@ binary = ['0', '1']
 
 def parse_binary(s: str):
     result = ''
-    if s[0] == '0' and s[1] == 'b':
+    if len(s) > 1 and s[0] == '0' and s[1] == 'b':
         for c in s[2:]:
             if c in binary:
                 result += c
             else:
                 return result
         return result
+    return None
 
 
 def is_binary(s: str):
-    return len(parse_binary(s)) == len(s)
+    binary = parse_binary(s)
+    if binary is None:
+        return False
+    return len(binary) == len(s)
 
 
 octal = [i for i in string.octdigits]
@@ -103,17 +135,21 @@ octal = [i for i in string.octdigits]
 
 def parse_octal(s: str):
     result = ''
-    if s[0] == '0' and s[1] == 'o':
+    if len(s) > 1 and s[0] == '0' and s[1] == 'o':
         for c in s[2:]:
             if c in octal:
                 result += c
             else:
                 return result
         return result
+    return None
 
 
 def is_octal(s: str):
-    return len(parse_octal(s)) == len(s)
+    octal = parse_octal(s)
+    if octal is None:
+        return False
+    return len(octal) == len(s)
 
 
 hexadecimal = [i for i in string.hexdigits]
@@ -121,18 +157,25 @@ hexadecimal = [i for i in string.hexdigits]
 
 def parse_hexadecimal(s: str):
     result = ''
-    if s[0] == '0' and s[1] == 'x':
+    if len(s) > 1 and s[0] == '0' and s[1] == 'x':
         for c in s[2:]:
             if c in hexadecimal:
                 result += c
             else:
                 return result
         return result
+    return None
 
 
 def is_hexadecimal(s: str):
-    return len(parse_hexadecimal(s)) == len(s)
+    hexadecimal = parse_hexadecimal(s)
+    if hexadecimal is None:
+        return False
+    return len(hexadecimal) == len(s)
 
 
 def is_number(s: str):
-    return is_double(s) or is_binary(s) or is_octal(s) or is_hexadecimal(s)
+    double = is_double(s)
+    binary = is_binary(s)
+    hexad = is_hexadecimal(s)
+    return double or binary or hexad

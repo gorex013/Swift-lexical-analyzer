@@ -31,6 +31,28 @@ class IdentifyComments(unittest.TestCase):
 
 		self.assertEqual(expected, processed)
 
+	def test_complex_comments2(self):
+		initial = """  /**
+   *  Moves the key at the specified `index` from `node` to
+   *  the `targetNode` at `position`
+   *
+   *  - Parameters:
+   *    - index: the index of the key to be moved in `node`
+   *    - targetNode: the node to move the key into
+   *    - node: the node to move the key from
+   *    - position: the position of the from node relative to the targetNode
+   */
+  private func move(keyAtIndex index: Int, to targetNode: BTreeNode,
+                                  from node: BTreeNode, at position: BTreeNodePosition) {
+    switch position {"""
+		processed = format(initial)
+		print(processed)
+
+class StringLiterals(unittest.TestCase):
+	def test_inline(self):
+		initial = 'print("Doctor \(dc_name), I don`t feel legs!")'
+		expected =
+
 class FormatTest(unittest.TestCase):
 	def test_simple(self):
 		initial = 'var a = 15->Int'
@@ -51,6 +73,15 @@ class FormatTest(unittest.TestCase):
 		answers = [is_processed(w) for w in words]
 
 		self.assertEqual(expected, answers)
+
+	def test_swift_file(self):
+		content = ''
+		with open('BTree.swift') as f:
+			content = f.read()
+		tokens = format(content)
+		with open('out.txt', 'w') as f:
+			for token in tokens:
+				f.write("{}\n".format(token))
 
 
 if __name__ == '__main__':

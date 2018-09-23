@@ -1,7 +1,13 @@
 keywords = {}
 operators = {}
 delimiters = {}
+string_literals = {}
 operators_priority = ['<=', '>=', '+=', '-=', '*=', '/=', '%=', '+', '*', '*', '-', '/', '%', '>', '<']
+
+# String literals
+string_literals['inline'] = 'INLINE_STRING_LITERAL'
+string_literals['multiline'] = 'MULTILINE_STRING_LITERAL'
+
 # DECLARATIONS
 keywords['associatedtype'] = 'D_ASSOCIATED_TYPE'
 keywords['class'] = 'D_CLASS'
@@ -122,6 +128,7 @@ delimiters['->'] = 'DEL_ARROW'
 delimiters['`'] = 'DEL_APOSTROPH'
 delimiters['?'] = 'DEL_QUESTION'
 delimiters['!'] = 'DEL_EXCLAMATION'
+delimiters['\\'] = 'DEL_DEREFERENCE'
 # OPERATORS
 operators['+'] = 'O_PLUS'
 operators['*'] = 'O_MULT'
