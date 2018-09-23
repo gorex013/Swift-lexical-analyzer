@@ -1,4 +1,6 @@
-import src.preprocessing.preprocessor as ps
+import src.preprocessing.string_literals as str_lit
+import src.preprocessing.comments as com
+import src.preprocessing.escaping as esc
 from src.swift_tokens import *
 import src.preprocessing.numeric_constant as number_literal
 
@@ -9,10 +11,10 @@ def format_file(src_fname):
 
 
 def format(content: str) -> list:
-    comments_filtered = ps.preprocess_comments(content)
-    formatted_strings = ps.format_strings(comments_filtered)
-    delimiters_escaped = ps.delimiter_spacing(formatted_strings)
-    operators_escaped = ps.operator_spacing(delimiters_escaped)
+    comments_filtered = com.preprocess_comments(content)
+    formatted_strings = str_lit.format_strings(comments_filtered)
+    delimiters_escaped = esc.delimiter_spacing(formatted_strings)
+    operators_escaped = esc.operator_spacing(delimiters_escaped)
     tokens_list = keywords_replacement(operators_escaped)
     return tokens_list
 
@@ -21,7 +23,7 @@ def handle_literal(literal: str):
     if number_literal.is_number(literal):
         return number_literal.handle_number(literal)
     elif 'TEMP' in literal: #TODO: more explanation
-        return ps.retrieve(literal)
+        return str_lit.retrieve(literal)
     else:
         return 'identifier.({})'.format(literal)
 

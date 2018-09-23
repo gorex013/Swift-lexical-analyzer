@@ -1,6 +1,6 @@
 import unittest
 from src.LexicalAnalyzer import *
-from src.preprocessing.preprocessor import *
+from src.preprocessing.string_literals import *
 from src.swift_tokens import *
 
 class IdentifyComments(unittest.TestCase):
@@ -69,7 +69,7 @@ class FormatTest(unittest.TestCase):
 	def test_simple(self):
 		initial = 'var a = 15->Int'
 		tokens = format(initial)
-		expected = ['D_VAR', {'identifier': 'a'}, 'DEL_EQUAL', 'NUMERICAL', 'DEL_ARROW', 'class_INT']
+		expected = ['D_VAR', 'identifier.(a)', 'DEL_EQUAL', 'decimal_integer.(15)', 'DEL_ARROW', 'class_INT']
 		self.assertEqual(expected, tokens)
 
 	def test_is_special(self):
