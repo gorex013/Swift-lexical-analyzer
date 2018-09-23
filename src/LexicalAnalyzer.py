@@ -3,6 +3,7 @@ import src.preprocessing.comments as com
 import src.preprocessing.escaping as esc
 from src.swift_tokens import *
 import src.preprocessing.numeric_constant as number_literal
+import argparse
 
 
 def format_file(src_fname):
@@ -118,10 +119,21 @@ def keywords_replacement(content: str) -> list:
             words[i] = handle_literal(words[i])
     return words
 
+
 if __name__ == '__main__':
-    with open('swift_examples/BTree.swift') as f:
+    parser = argparse.ArgumentParser(description='Lexical analyzer')
+    parser.add_argument('input', metavar='in', type=str,
+                        help='Full path to file to process by Swift Lexical analyzer')
+    parser.add_argument('output', metavar='out', type=str,
+                        help='Path to store tokens')
+
+    args = parser.parse_args()
+    input_file = args.input
+    out_file = args.output
+
+    with open(input_file) as f:
         content = f.read()
     tokens = process(content)
-    with open('swift_examples/out.txt', 'w') as f:
+    with open(out_file, 'w') as f:
         for token in tokens:
             f.write("{}\n".format(token))
