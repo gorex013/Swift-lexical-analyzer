@@ -1,7 +1,7 @@
 import sys
-sys.path.append('..')
+# sys.path.append('..')
 
-from swift_tokens import *
+from src.lexer.swift_tokens import *
 
 
 temp_id = 0  # Stores current index of last item in a storage

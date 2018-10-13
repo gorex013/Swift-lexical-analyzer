@@ -1,7 +1,7 @@
 import sys
-sys.path.append('..')
+# sys.path.append('..')
 
-from swift_tokens import *
+from src.lexer.swift_tokens import *
 
 
 def delimiter_spacing(content):

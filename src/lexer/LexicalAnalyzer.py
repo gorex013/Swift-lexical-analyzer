@@ -1,11 +1,11 @@
 import sys
-sys.path.insert(0, sys.path[0]+'/Swift-lexical-analyzer')
+# sys.path.insert(0, sys.path[0]+'/Swift-lexical-analyzer/lexer')
 
-import preprocessing.string_literals as str_lit
-import preprocessing.comments as com
-import preprocessing.escaping as esc
-from swift_tokens import *
-import preprocessing.numeric_constant as number_literal
+import src.lexer.preprocessing.string_literals as str_lit
+import src.lexer.preprocessing.comments as com
+import src.lexer.preprocessing.escaping as esc
+from .swift_tokens import *
+import src.lexer.preprocessing.numeric_constant as number_literal
 import argparse
 
 
@@ -17,10 +17,10 @@ def format_file(src_fname):
     """
     with open(src_fname) as f:
         content = f.read()
-        return process(content)
+        return lexer(content)
 
 
-def process(content: str) -> list:
+def lexer(content: str) -> list:
     """
     Method processes source code with lexical analyzer
     :param content: source code
@@ -136,7 +136,7 @@ if __name__ == '__main__':
 
     with open(input_file) as f:
         content = f.read()
-    tokens = process(content)
+    tokens = lexer(content)
     with open(out_file, 'w') as f:
         for token in tokens:
             f.write("{}\n".format(token))
