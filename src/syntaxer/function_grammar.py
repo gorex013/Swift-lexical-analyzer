@@ -107,8 +107,9 @@ class FunctionDeclarationGrammar:
         params = [(self.pnames[i], self.ptypes[i]) for i in range(len(self.pnames))]
         return FunctionDefinition(self.fname, params, self.rtypes, None), self.pointer
 
+
 class FunctionCallGrammar:
-    def __init__(self, tokens: list, pointer: int, initial_state=1):
+    def __init__(self, tokens: list, pointer: int, initial_state=1, fname=''):
         self.tokens = tokens
         self.pointer = pointer
         self.callee_name = ''
@@ -122,12 +123,15 @@ class FunctionCallGrammar:
             self.name = name
             self.action = action
             self.states = {}
+            self.opt_name = None
 
         def make_transition(self, token, stack: list):
             # if self.transitions.get(token, None) is None:
             #     raise FunctionParseException("Incorrect order of tokens {}".format(token))
             if self.action is not None:
-                self.action(token)  # Действие должно быть завязано на объект Функция
+                result = self.action(token, self)  # Действие должно быть завязано на объект Функция
+                if result is not None:
+                    token = result
             if type(token) is dict and token.get('identifier', None) is not None:
                 token = 'ID'  # Обработка случая, когда у меня {'identifier': 'sdfs'} приходит, а хотелос бы 'ID'
             if type(token) is dict and (FunctionCallGrammar.is_string(token) or FunctionCallGrammar.is_number(token)):
@@ -144,7 +148,7 @@ class FunctionCallGrammar:
             stack += list(push)
             return self.states[index]
 
-    def save_arg(self, token):
+    def save_arg(self, token, state_obj):
         if type(token) is dict and (FunctionCallGrammar.is_string(token) or FunctionCallGrammar.is_number(token)):
             token = self.preprocess_literal(token)
         self.args.append(token)
@@ -162,7 +166,7 @@ class FunctionCallGrammar:
         hexad = token.get('octal_integer', None) is not None
         return integer or binary or floatt or double or hexad
 
-    def preprocess_literal(self, token):
+    def preprocess_literal(self, token, state_obj):
         is_str = FunctionCallGrammar.is_string(token)
         is_num = FunctionCallGrammar.is_number(token)
         if is_str:
@@ -180,22 +184,24 @@ class FunctionCallGrammar:
             return value
         raise Exception("How did you come here?")
 
-    def complex_action(self, token):
+    def complex_action(self, token, state_obj):
         if token is dict:  # to 9
             return self.save_complex_arg(token)
-        if 'LP' in token:  # to 10
-            fcall, pointer = parse_function_call(self.tokens, self.pointer)
+        if 'DEL_LP' in token:  # to 10
+            fcall, pointer = parse_function_call(self.tokens, self.pointer - 1, state_obj.opt_name)
             self.pointer = pointer
             self.args.append(fcall)
+            return tokens[self.pointer]
 
-    def save_complex_arg(self, token):
+    def save_complex_arg(self, token, state_obj):
         pass #TODO me, store somehow name and value
 
-    def save_name(self, name):
+    def save_name(self, name, state_obj):
+        state_obj.opt_name = name['identifier']
         self.callee_name = name['identifier']
 
 
-def parse_function_call(tokens, pointer, initial=1):
+def parse_function_call(tokens, pointer, initial=1, fname=None):
     stack = ['Z']
     fcall_grammar = FunctionCallGrammar(tokens, pointer)
     fcall_grammar.states = {}
@@ -222,12 +228,21 @@ def parse_function_call(tokens, pointer, initial=1):
 
     state = fcall_grammar.states[fcall_grammar.initial_state]
     while state.final is not True:
-        state = state.make_transition(tokens[pointer], stack)
-        pointer += 1
+        state = state.make_transition(tokens[fcall_grammar.pointer], stack)
+        fcall_grammar.pointer += 1
 
-    f_call = FunctionCall(fcall_grammar.callee_name, fcall_grammar.args)
-    return f_call, pointer
+    if fname is not None:
+        name = fname
+    else:
+        name = fcall_grammar.callee_name
+
+    f_call = FunctionCall(name, fcall_grammar.args)
+    return f_call, fcall_grammar.pointer
+
 
 if __name__ == "__main__":
-    pass
-    # print(f_call.dict_representation())
+    with open('f_cal.txt') as f:
+        content = f.read()
+    tokens = lexer(content)
+    f_call, pointer = parse_function_call(tokens=tokens, pointer=0)
+    print(f_call.dict_representation())
