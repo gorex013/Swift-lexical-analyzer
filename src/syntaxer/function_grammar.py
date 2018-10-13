@@ -129,7 +129,7 @@ class FunctionCallGrammar:
             # if self.transitions.get(token, None) is None:
             #     raise FunctionParseException("Incorrect order of tokens {}".format(token))
             if self.action is not None:
-                result = self.action(token, self)  # Действие должно быть завязано на объект Функция
+                result = self.action(token)  # Действие должно быть завязано на объект Функция
                 if result is not None:
                     token = result
             if type(token) is dict and token.get('identifier', None) is not None:
@@ -148,7 +148,7 @@ class FunctionCallGrammar:
             stack += list(push)
             return self.states[index]
 
-    def save_arg(self, token, state_obj):
+    def save_arg(self, token):
         if type(token) is dict and (FunctionCallGrammar.is_string(token) or FunctionCallGrammar.is_number(token)):
             token = self.preprocess_literal(token)
         self.args.append(token)
@@ -166,7 +166,7 @@ class FunctionCallGrammar:
         hexad = token.get('octal_integer', None) is not None
         return integer or binary or floatt or double or hexad
 
-    def preprocess_literal(self, token, state_obj):
+    def preprocess_literal(self, token):
         is_str = FunctionCallGrammar.is_string(token)
         is_num = FunctionCallGrammar.is_number(token)
         if is_str:
@@ -184,24 +184,23 @@ class FunctionCallGrammar:
             return value
         raise Exception("How did you come here?")
 
-    def complex_action(self, token, state_obj):
+    def complex_action(self, token):
         if token is dict:  # to 9
             return self.save_complex_arg(token)
         if 'DEL_LP' in token:  # to 10
-            fcall, pointer = parse_function_call(self.tokens, self.pointer - 1, state_obj.opt_name)
+            fcall, pointer = parse_function_call(self.tokens, self.pointer - 1)
             self.pointer = pointer
             self.args.append(fcall)
             return tokens[self.pointer]
 
-    def save_complex_arg(self, token, state_obj):
+    def save_complex_arg(self, token):
         pass #TODO me, store somehow name and value
 
-    def save_name(self, name, state_obj):
-        state_obj.opt_name = name['identifier']
+    def save_name(self, name):
         self.callee_name = name['identifier']
 
 
-def parse_function_call(tokens, pointer, initial=1, fname=None):
+def parse_function_call(tokens, pointer, initial=1):
     stack = ['Z']
     fcall_grammar = FunctionCallGrammar(tokens, pointer)
     fcall_grammar.states = {}
@@ -231,12 +230,7 @@ def parse_function_call(tokens, pointer, initial=1, fname=None):
         state = state.make_transition(tokens[fcall_grammar.pointer], stack)
         fcall_grammar.pointer += 1
 
-    if fname is not None:
-        name = fname
-    else:
-        name = fcall_grammar.callee_name
-
-    f_call = FunctionCall(name, fcall_grammar.args)
+    f_call = FunctionCall(fcall_grammar.callee_name, fcall_grammar.args)
     return f_call, fcall_grammar.pointer
 
 
