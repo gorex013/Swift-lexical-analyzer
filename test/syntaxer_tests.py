@@ -34,3 +34,17 @@ class FunctionCallTest(unittest.TestCase):
         self.assertEqual(f_call.name, 'print')
         self.assertEqual(len(f_call.args), 1)
         self.assertListEqual(f_call.args, ['"str"'])
+
+    def test_complex_subcalls(self):
+        with open('swift_examples/f_cal.txt') as f:
+            content = f.read()
+        tokens = lexer(content)
+        f_call, pointer = parse_function_call(tokens=tokens, pointer=0)
+        print(f_call.dict_representation())
+
+        self.assertEqual(f_call.name, 'print')
+        self.assertEqual(type(f_call), type(f_call.args[0]))
+        self.assertEqual(len(f_call.args), 3)
+        f2 = f_call.args[0]
+        self.assertEqual(f2.name, 'call')
+        self.assertListEqual(f2.args, ['"cat"'])

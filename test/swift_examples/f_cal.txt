@@ -1,0 +1,1 @@
+print(call("cat"), dealloc(d, b), pep)

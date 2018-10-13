@@ -190,8 +190,9 @@ class FunctionCallGrammar:
         if 'DEL_LP' in token:  # to 10
             fcall, pointer = parse_function_call(self.tokens, self.pointer - 1)
             self.pointer = pointer
+            self.args.pop()
             self.args.append(fcall)
-            return tokens[self.pointer]
+            return self.tokens[self.pointer]
 
     def save_complex_arg(self, token):
         pass #TODO me, store somehow name and value
@@ -235,8 +236,5 @@ def parse_function_call(tokens, pointer, initial=1):
 
 
 if __name__ == "__main__":
-    with open('f_cal.txt') as f:
-        content = f.read()
-    tokens = lexer(content)
-    f_call, pointer = parse_function_call(tokens=tokens, pointer=0)
+
     print(f_call.dict_representation())
