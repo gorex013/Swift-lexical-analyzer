@@ -7,7 +7,7 @@ from src.lexer.LexicalAnalyzer import lexer
 from src.syntaxer.function_parser import *
 
 
-class FunctionGrammar:
+class FunctionDeclarationGrammar:
     def __init__(self, tokens: list, pointer: int):
         self.tokens = tokens
         self.pointer = pointer
@@ -105,8 +105,129 @@ class FunctionGrammar:
             self.pointer += 1
 
         params = [(self.pnames[i], self.ptypes[i]) for i in range(len(self.pnames))]
-        return Function(self.fname, params, self.rtypes, None), self.pointer
+        return FunctionDefinition(self.fname, params, self.rtypes, None), self.pointer
 
+class FunctionCallGrammar:
+    def __init__(self, tokens: list, pointer: int, initial_state=1):
+        self.tokens = tokens
+        self.pointer = pointer
+        self.callee_name = ''
+        self.args = []
+        self.initial_state = initial_state
+
+    class State:
+        def __init__(self, name, final=False, action=None):
+            self.transitions = {}
+            self.final = final
+            self.name = name
+            self.action = action
+            self.states = {}
+
+        def make_transition(self, token, stack: list):
+            # if self.transitions.get(token, None) is None:
+            #     raise FunctionParseException("Incorrect order of tokens {}".format(token))
+            if self.action is not None:
+                self.action(token)  # Действие должно быть завязано на объект Функция
+            if type(token) is dict and token.get('identifier', None) is not None:
+                token = 'ID'  # Обработка случая, когда у меня {'identifier': 'sdfs'} приходит, а хотелос бы 'ID'
+            if type(token) is dict and (FunctionCallGrammar.is_string(token) or FunctionCallGrammar.is_number(token)):
+                token = 'CONST'
+
+            if (self.name == 3 or self.name == 6 or self.name == 8) and token in 'DEL_RP':
+                popped = stack.pop() + stack.pop()
+            else:
+                popped = stack.pop()
+
+            # popped = popped[::-1]
+
+            index, push = self.transitions[(token, popped)]
+            stack += list(push)
+            return self.states[index]
+
+    def save_arg(self, token):
+        if type(token) is dict and (FunctionCallGrammar.is_string(token) or FunctionCallGrammar.is_number(token)):
+            token = self.preprocess_literal(token)
+        self.args.append(token)
+
+    def is_string(token):
+        is_inline = token.get('INLINE_STRING_LITERAL', None) is not None
+        is_multiline = token.get('MULTILINE_STRING_LITERAL', None) is not None
+        return is_inline or is_multiline
+
+    def is_number(token):
+        integer = token.get('decimal_integer', None) is not None
+        binary = token.get('binary_integer', None) is not None
+        floatt = token.get('decimal_double', None) is not None
+        double = token.get('decimal_double', None) is not None
+        hexad = token.get('octal_integer', None) is not None
+        return integer or binary or floatt or double or hexad
+
+    def preprocess_literal(self, token):
+        is_str = FunctionCallGrammar.is_string(token)
+        is_num = FunctionCallGrammar.is_number(token)
+        if is_str:
+            inline = token.get('INLINE_STRING_LITERAL', None)
+            multiline = token.get('MULTILINE_STRING_LITERAL', None)
+            return inline or multiline
+        if is_num:
+            integer = token.get('decimal_integer', None)
+            binary = token.get('binary_integer', None)
+            floatt = token.get('decimal_double', None)
+            double = token.get('decimal_double', None)
+            hexad = token.get('octal_integer', None)
+            return integer or binary or floatt or double or hexad
+
+            return value
+        raise Exception("How did you come here?")
+
+    def complex_action(self, token):
+        if token is dict:  # to 9
+            return self.save_complex_arg(token)
+        if 'LP' in token:  # to 10
+            fcall, pointer = parse_function_call(self.tokens, self.pointer)
+            self.pointer = pointer
+            self.args.append(fcall)
+
+    def save_complex_arg(self, token):
+        pass #TODO me, store somehow name and value
+
+    def save_name(self, name):
+        self.callee_name = name['identifier']
+
+
+def parse_function_call(tokens, pointer, initial=1):
+    stack = ['Z']
+    fcall_grammar = FunctionCallGrammar(tokens, pointer)
+    fcall_grammar.states = {}
+    for i in range(11):
+        fcall_grammar.states[i] = fcall_grammar.State(name=i)
+    fcall_grammar.states[3].action = fcall_grammar.save_arg
+    fcall_grammar.states[8].action = fcall_grammar.complex_action
+    fcall_grammar.states[7].action = fcall_grammar.save_arg
+    fcall_grammar.states[1].action = fcall_grammar.save_name
+
+    s = fcall_grammar.states
+    s[4].final = True
+    s[1].transitions = {('ID', 'Z'): (2, 'Z')}
+    s[2].transitions = {('DEL_LP', 'Z'): (3, 'ZA')}
+    s[3].transitions = {('DEL_RP', 'AZ'): (4, 'Z'), ('CONST', 'A'): (6, 'A'), ('ID', 'A'): (8, 'A')}
+    s[6].transitions = {('DEL_COMMA', 'A'): (7, 'A'), ('DEL_RP', 'AZ'): (4, 'Z')}
+    s[7].transitions = {('CONST', 'A'): (6, 'A'), ('ID', 'A'): (8, 'A')}
+    s[8].transitions = {('DEL_COMMA', 'A'): (7, 'A'), ('DEL_COLON', 'A'): (9, 'A'), ('LP', 'A'): (10, 'A'), ('DEL_RP', 'AZ'): (4, 'Z')}
+    s[9].transitions = {('ID', 'A'): (8, 'A'), ('CONST', 'A'): (6, 'A')}
+    s[10].transitions = {('DEL_RP', 'A'): (8, 'A')}
+
+    for item in s.values():
+        item.states = s
+
+    state = fcall_grammar.states[fcall_grammar.initial_state]
+    while state.final is not True:
+        state = state.make_transition(tokens[pointer], stack)
+        pointer += 1
+
+    f_call = FunctionCall(fcall_grammar.callee_name, fcall_grammar.args)
+    return f_call, pointer
 
 if __name__ == "__main__":
     pass
+    # print(f_call.dict_representation())

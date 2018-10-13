@@ -132,7 +132,7 @@ delimiters['\\'] = 'DEL_DEREFERENCE'
 # OPERATORS
 operators['+'] = 'O_PLUS'
 operators['*'] = 'O_MULT'
-operators['*'] = 'O_POWER'
+operators['^'] = 'O_POWER'
 operators['-'] = 'O_MINUS'
 operators['/'] = 'O_DIV'
 operators['%'] = 'O_MOD'  # 'O_REMINDER_OF_BETTER_DAYS'
