@@ -109,10 +109,4 @@ class FunctionGrammar:
 
 
 if __name__ == "__main__":
-    with open('test_foo.txt') as f:
-        content = f.read()
-    tokens = lexer(content)
-    pointer = 1  # because assume  we found `func` and now know that we have to parse other stuff
-    fgrammar = FunctionGrammar(tokens, pointer)
-    foo, pointer = fgrammar.process_func()
-    print(foo)
+    pass
