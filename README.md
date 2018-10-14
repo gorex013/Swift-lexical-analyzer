@@ -1,3 +1,21 @@
+# Swift syntax analyzer
+
+## BNF
+FunctionDeclaration::= func ID LP \[ID : Type\[, ID COLON Type\]* \] RP ARROW Type|(LP Type [, Type]+) RP LCP Expression RCP
+
+FunctionCall::= ID LP \[Labeled|Const|FunctionCall \[, Labeled|Const|FunctionCall\]* \] RP  
+
+Labeled ::= ID COLON Const  
+Const ::= IntegerConst | StringConst  
+IntegerConst ::= {'number': value}  
+StringConst ::= {'multiline|inline string': value}  
+Type ::= String | FLOAT | INTEGER | VOID | DOUBLE | ARRAY | DICT | CHARACTER | BOOL | UINT | SET  
+
+Expression ::= ...  
+
+
+If you wish to take a look at FDeclaration & FCall PDAs - ask @evgerher
+
 # Swift lexical analyzer
 
 ## Team
