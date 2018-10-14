@@ -2,9 +2,92 @@ import re
 import sys
 
 # sys.path.insert(0, sys.path[0]+'/Swift-lexical-analyzer/syntaxer')
+from src.lexer.lexical_analyzer import lexer
+from src.syntaxer.ObjectTrees import *
 
-from src.lexer.LexicalAnalyzer import lexer
-from src.syntaxer.function_parser import *
+
+class VariableCreationGrammar:
+    def __init__(self, tokens: list, pointer: int, initial_status=(1, False)):
+        self.tokens = tokens
+        self.pointer = pointer
+        self.vname = ''
+        self.value = ''
+        self.vtype = ''
+        self.states = []
+        self.initial_state = initial_status[0]
+        self.is_const = initial_status[1]
+        self.created_vars = []
+
+    class State:
+        def __init__(self, name, final=False, action=None):
+            self.transitions = {}
+            self.final = final
+            self.name = name
+            self.states = {}
+            self.action = action
+
+        def make_transition(self, token):
+            if self.action is not None:
+                self.action(token)  # Действие должно быть завязано на объект Функция
+            if type(token) is dict and token['identifier'] is not None:
+                token = 'ID'  # Обработка случая, когда у меня {'identifier': 'sdfs'} приходит, а хотелос бы 'ID'
+            if token.startswith("class_"):
+                token = 'CLASS'
+
+            index = self.transitions[token]
+            return self.states[index]
+
+    def rec_variable(self):
+        grammar = VariableCreationGrammar(self.tokens, self.pointer + 1, initial_status=(2, self.is_const))
+        self.created_vars.append(grammar.process_var_definition())
+
+    def process_var_definition(self):
+        self.states = {
+            1: self.State(name='1', action=self.set_const),
+            2: self.State(name='2', action=self.save_name),
+            3: self.State(name='3'),
+            4: self.State(name='4', action=self.save_value),
+            5: self.State(name='5', action=self.rec_variable, final=True),
+            6: self.State(name='6', final=True),
+            7: self.State(name='7', action=self.save_type),
+            8: self.State(name='8'),
+        }
+
+        s = self.states
+        s[1].transitions = {'VAR': 2, 'LET': 2}
+        s[2].transitions = {'ID': 3}
+        s[3].transitions = {'COLON': 7, 'EQUAL': 4}
+        s[4].transitions = {'ID': 5, 'CONST': 5}
+        s[5].transitions = {'COMMA': 6}
+        s[7].transitions = {'COLON': 8}
+        s[8].transitions = {'CLASS': 4}
+
+        for item in self.states.values():
+            item.states = s
+
+        state = self.states[self.initial_state]  # Initial
+        while state.final is not True and self.tokens[self.pointer] != 'DEL_COMMA':  # TODO: CHECK
+            state = state.make_transition(self.tokens[self.pointer])
+            self.pointer += 1
+
+        self.created_vars.append(VariableDefinition(self.vname, self.value, self.vtype, self.is_const))
+        return self.created_vars
+
+    def set_const(self, boolean):
+        self.is_const = boolean
+
+    def save_name(self, name):
+        self.vname = name['identifier']
+
+    def save_type(self, typo):
+        self.value = typo
+
+    def save_value(self, value):
+        if type(value) is dict and value.get('identifier', None) is not None:
+            value = value['identifier']
+        elif type(value) is dict and (FunctionDeclarationGrammar.is_number(value) or FunctionDeclarationGrammar.is_string(value)):
+            value = FunctionDeclarationGrammar.preprocess_literal(value)
+        self.value = value
 
 
 class FunctionDeclarationGrammar:
@@ -166,7 +249,7 @@ class FunctionCallGrammar:
         hexad = token.get('octal_integer', None) is not None
         return integer or binary or floatt or double or hexad
 
-    def preprocess_literal(self, token):
+    def preprocess_literal(token):
         is_str = FunctionCallGrammar.is_string(token)
         is_num = FunctionCallGrammar.is_number(token)
         if is_str:
@@ -236,5 +319,8 @@ def parse_function_call(tokens, pointer, initial=1):
 
 
 if __name__ == "__main__":
-
-    print(f_call.dict_representation())
+    with open('var_def.txt') as f:
+        content = f.read()
+    tokens = lexer(content)
+    pointer = 0
+    results = VariableCreationGrammar(tokens, pointer).process_var_definition()

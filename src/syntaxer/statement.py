@@ -23,3 +23,6 @@ class Statement:
                 for e in condition_strings:
                     condition_list.add_condition(Condition(e))
 
+
+if __name__ == '__main__':
+    Statement.parse_statement([keywords['if'], ])
