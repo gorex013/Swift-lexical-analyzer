@@ -1,0 +1,12 @@
+func foo(a:String) -> Int {
+    print("hello")
+}
+func bre(a:String) -> Int {
+    print("hello")
+}
+
+func bar(a:String) -> Int {
+    print("hello")
+}
+
+print("dowgs")

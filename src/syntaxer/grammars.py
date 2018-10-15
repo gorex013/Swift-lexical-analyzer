@@ -152,15 +152,13 @@ class FunctionDeclarationGrammar:
 
     def process_func(self):
         self.states = {
+            1: self.State(name='1'),
             2: self.State(name='2', action=self.save_name),
             3: self.State(name='3'),
             4: self.State(name='4', action=self.save_pname),
             5: self.State(name='5'),
             6: self.State(name='6', action=self.save_rtype),
-            7: self.State(name='7'),
-            8: self.State(name='8'),
-            9: self.State(name='9'),
-            10: self.State(name='10', final=True),
+            7: self.State(name='7', final=True),
             11: self.State(name='11'),
             12: self.State(name='12',  action=self.save_ptype),
             13: self.State(name='13'),
@@ -172,14 +170,12 @@ class FunctionDeclarationGrammar:
         }
 
         s = self.states
+        s[1].transitions = {'D_FUNCTION': 2}
         s[2].transitions = {'ID': 3}
         s[3].transitions = {'DEL_LP': 4}
         s[4].transitions = {'ID': 11, 'DEL_RP': 5}
         s[5].transitions = {'DEL_ARROW': 6}
         s[6].transitions = {'CLASS': 7, 'DEL_LP': 15}
-        s[7].transitions = {'DEL_LCP': 8}
-        s[8].transitions = {'S_RETURN': 9}  # TODO: THERE SHOULD BE PARSED EXPRESSION
-        s[9].transitions = {'DEL_RCP': 10}
         s[11].transitions = {'DEL_COLON': 12}
         s[12].transitions = {'CLASS': 13}
         s[13].transitions = {'DEL_COMMA': 14, 'DEL_RP': 5}
@@ -191,9 +187,8 @@ class FunctionDeclarationGrammar:
         for item in self.states.values():
             item.states = s
 
-        state = self.states[2]  # Initial
-        final = self.states[10]
-        while state != final:
+        state = self.states[1]  # Initial
+        while state.final is not True:
             state = state.make_transition(self.tokens[self.pointer])
             self.pointer += 1
 
