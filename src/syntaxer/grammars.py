@@ -68,8 +68,8 @@ class VariableCreationGrammar:
         s[3].transitions = {'DEL_COLON': 7, 'DEL_EQUAL': 4}
         s[4].transitions = {'ID': 5, 'CONST': 5}
         s[5].transitions = {'DEL_COMMA': 6, 'DEL_LP': 9}
-        s[7].transitions = {'DEL_COLON': 8}
-        s[8].transitions = {'CLASS': 4}
+        s[7].transitions = {'CLASS': 8}
+        s[8].transitions = {'DEL_EQUAL': 4}
         s[9].transitions = {'DEL_RP': 5}
 
         for item in self.states.values():
@@ -90,7 +90,7 @@ class VariableCreationGrammar:
         self.vname = name['identifier']
 
     def save_type(self, typo):
-        self.value = typo
+        self.vtype = typo[len('class_'):]
 
     def save_value(self, value):
         if type(value) is dict and value.get('identifier', None) is not None:
@@ -330,7 +330,13 @@ def parse_function_call(tokens, pointer, initial=1):
 
 
 if __name__ == "__main__":
-    with open('var_def.txt') as f:
+    # with open('var_def.txt') as f:
+    #     content = f.read()
+    # tokens = lexer(content)
+    # pointer = 0
+    # results = VariableCreationGrammar(tokens, pointer).process_var_definition()
+    # print(results)
+    with open('var_type.txt') as f:
         content = f.read()
     tokens = lexer(content)
     pointer = 0
