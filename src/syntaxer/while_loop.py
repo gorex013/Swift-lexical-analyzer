@@ -1,14 +1,28 @@
+import json
+
+from src.lexer.lexical_analyzer import lexer
 from src.lexer.swift_tokens import keywords
-from src.syntaxer.code_block import CodeBlock
-from src.syntaxer.condition_list import ConditionList
+from src.syntaxer.if_statement import parse_condition_list, parse_code_block
 
 
-class WhileLoop:
-    trigger_token = keywords['while']
+def parse_while_loop(tokens: list, i: int) -> (dict, int):
+    result = {}
+    if tokens[i] == keywords['while']:
+        i += 1
+    result["condition-list"], i = parse_condition_list(tokens, i)
+    result["code-block"], i = parse_code_block(tokens, i)
+    if result is None:
+        return None, i
+    result = {"while-loop": result}
+    return result, i
 
-    def __init__(self, condition_list: ConditionList, code_block: CodeBlock):
-        self.condition_list = condition_list
-        self.code_block = code_block
 
-    def dict(self):
-        return '"while-loop":{' + self.condition_list.dict() + ',' + self.code_block.dict() + '}'
+code = """
+while(x<10){
+    x+=1
+    print(x)
+}
+"""
+tokens = lexer(code)
+x, y = parse_while_loop(tokens, 0)
+print(json.dumps(x, sort_keys=True, indent=4, default=str))

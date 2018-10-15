@@ -1,55 +1,52 @@
-from src.lexer.swift_tokens import keywords
-from src.syntaxer.code_block import CodeBlock
-from src.syntaxer.condition_list import ConditionList
+import json
+from src.lexer.lexical_analyzer import lexer
+from src.lexer.swift_tokens import delimiters, keywords
 
 
-class IfStatement:
-    trigger_token = keywords['if']
-    pass
+def parse_condition_list(tokens: list, i: int) -> (dict, int):
+    result = {}
+    j = tokens[i:].index(delimiters['{'])
+    result["condition"], i = tokens[i:i + j], i + j
+    return result, i
 
 
-class ElseClause:
-    trigger_token = keywords['else']
-
-    pass
-
-
-def if_init(self, condition_list: ConditionList, code_block: CodeBlock, else_clause: ElseClause = None):
-    if condition_list is None or len(condition_list.condition_list) == 0:
-        raise Exception("If statement without condition is not valid!!!")
-    self.condition_list = condition_list
-    self.code_block = code_block
-    self.else_clause = else_clause
-
-
-def else_init(self, code_block: CodeBlock = None, if_statement: IfStatement = None):
-    if code_block is None and if_statement is None:
-        raise Exception("After else should be a code block or an if statement!!!")
-    self.code_block = code_block
-    self.if_statement = if_statement
+def parse_else_clause(tokens: list, i: int) -> (dict, int):
+    result = {}
+    print(i)
+    if tokens[i] != keywords['else']:
+        return None, i
+    i += 1
+    if tokens[i] == keywords['if']:
+        result["if-statement"], i = parse_if_statement(tokens, i + 1)
+    elif tokens[i] == delimiters['{']:
+        result["code-block"], i = parse_code_block(tokens, i)
+    return result, i
 
 
-IfStatement.__init__ = if_init
-ElseClause.__init__ = else_init
+def parse_if_statement(tokens: list, i: int) -> (dict, int):
+    result = {}
+    if tokens[i] == keywords['if']:
+        i += 1
+    result["condition-list"], i = parse_condition_list(tokens, i)
+    result["code-block"], i = parse_code_block(tokens, i)
+
+    # if tokens[i] == keywords['else']:
+    #     result["else-clause"], i = parse_else_clause(tokens, i + 1)
+    result = {"if-statement": result}
+    return result, i
 
 
-def if_dict(self):
-    result = '"if-statement":{' + self.code_block.dict()
-    if self.else_clause is not None:
-        result += ',' + self.else_clause.dict()
-    result += '}'
-    return result
-
-
-def else_dict(self):
-    result = '"else-clause":{'
-    if self.code_block is None:
-        result += self.if_statement.dict()
-    else:
-        result += self.code_block.dict()
-    result += '}'
-    return result
-
-
-IfStatement.dict = if_dict
-ElseClause.dict = else_dict
+def parse_code_block(tokens: list, i: int) -> (dict, int):
+    result = {
+        "statements": {}
+    }
+    k = 1
+    j = i
+    while k > 0 and j < len(tokens):
+        if tokens[j] == delimiters['{']:
+            k += 1
+        elif tokens[j] == delimiters['}']:
+            k -= 1
+        j += 1
+    result["statements"]["statement"] = tokens[i:j]
+    return result, j

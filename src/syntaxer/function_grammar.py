@@ -3,7 +3,7 @@ import sys
 
 # sys.path.insert(0, sys.path[0]+'/Swift-lexical-analyzer/syntaxer')
 
-from src.lexer.LexicalAnalyzer import lexer
+from src.lexer.lexical_analyzer import lexer
 from src.syntaxer.function_parser import *
 
 
@@ -69,7 +69,7 @@ class FunctionDeclarationGrammar:
             9: self.State(name='9'),
             10: self.State(name='10', final=True),
             11: self.State(name='11'),
-            12: self.State(name='12',  action=self.save_ptype),
+            12: self.State(name='12', action=self.save_ptype),
             13: self.State(name='13'),
             14: self.State(name='14'),
             15: self.State(name='15'),
@@ -195,7 +195,7 @@ class FunctionCallGrammar:
             return self.tokens[self.pointer]
 
     def save_complex_arg(self, token):
-        pass #TODO me, store somehow name and value
+        pass  # TODO me, store somehow name and value
 
     def save_name(self, name):
         self.callee_name = name['identifier']
@@ -219,7 +219,8 @@ def parse_function_call(tokens, pointer, initial=1):
     s[3].transitions = {('DEL_RP', 'AZ'): (4, 'Z'), ('CONST', 'A'): (6, 'A'), ('ID', 'A'): (8, 'A')}
     s[6].transitions = {('DEL_COMMA', 'A'): (7, 'A'), ('DEL_RP', 'AZ'): (4, 'Z')}
     s[7].transitions = {('CONST', 'A'): (6, 'A'), ('ID', 'A'): (8, 'A')}
-    s[8].transitions = {('DEL_COMMA', 'A'): (7, 'A'), ('DEL_COLON', 'A'): (9, 'A'), ('LP', 'A'): (10, 'A'), ('DEL_RP', 'AZ'): (4, 'Z')}
+    s[8].transitions = {('DEL_COMMA', 'A'): (7, 'A'), ('DEL_COLON', 'A'): (9, 'A'), ('LP', 'A'): (10, 'A'),
+                        ('DEL_RP', 'AZ'): (4, 'Z')}
     s[9].transitions = {('ID', 'A'): (8, 'A'), ('CONST', 'A'): (6, 'A')}
     s[10].transitions = {('DEL_RP', 'A'): (8, 'A')}
 
@@ -236,5 +237,4 @@ def parse_function_call(tokens, pointer, initial=1):
 
 
 if __name__ == "__main__":
-
     print(f_call.dict_representation())

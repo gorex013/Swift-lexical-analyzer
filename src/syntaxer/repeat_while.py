@@ -1,12 +1,27 @@
-from src.syntaxer.code_block import CodeBlock
-from src.syntaxer.condition_list import ConditionList
+import json
+
+from src.lexer.lexical_analyzer import lexer
+from src.syntaxer.if_statement import parse_code_block, parse_condition_list
 
 
-class RepeatWhile:
-    def __init__(self, code_block: CodeBlock, condition_list: ConditionList):
-        self.code_block = code_block
-        self.condition_list = condition_list
+def parse_repeat_while(tokens: list, i: int) -> (dict, int):
+    result = {}
+    result["code-block"], i = parse_code_block(tokens, i)
+    result["condition-list"], i = parse_condition_list(tokens, i)
+    if result is not None:
+        result["repeat-while-loop"] = result
+    return result, i
 
-    def dict(self):
-        return '"repeat-while":{' + self.code_block.dict() + ',' \
-               + self.condition_list.dict() + '}'
+
+code = """
+repeat{
+    if x>2 {
+        x+=1
+    } else {
+        x+=2
+    }
+}while(x<10)
+    """
+tokens = lexer(code)
+x, y = parse_repeat_while(tokens, 0)
+print(json.dumps(x, sort_keys=True, indent=4, default=str))

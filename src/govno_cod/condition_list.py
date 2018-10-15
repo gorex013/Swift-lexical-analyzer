@@ -3,7 +3,7 @@ class Condition:
         self.value = value
 
     def dict(self):
-        return '"condition":{' + self.value.dict() + '}'
+        return '"condition":{' + self.value + '}'
 
 
 class ConditionList:
