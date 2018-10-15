@@ -1,4 +1,13 @@
 # Swift syntax analyzer
+#### Implemented
+```
+1. imports
+2. functions
+3. cycles
+4. if's
+5. string and number literals
+6. variables assignments
+```
 
 ## BNF
 FunctionDeclaration::= func ID LP \[ID : Type\[, ID COLON Type\]* \] RP ARROW Type|(LP Type [, Type]+) RP LCP Expression RCP
@@ -14,6 +23,19 @@ Type ::= String | FLOAT | INTEGER | VOID | DOUBLE | ARRAY | DICT | CHARACTER | B
 Expression ::= ...  
 
 
+If ::= 'if' ConditionList CodeBlock [ElseClause]
+ElseClause ::= 'else' If | CodeBlock
+ConditionList ::= Condition | Condition ',' ConditionList
+Condition ::= Expression
+CodeBlock ::= '{' Statements '}'
+Statements ::= Statement | Statement Statements
+Statement ::= ...
+
+While ::= 'while' ConditionList CodeBlock
+
+Repeat ::= 'repeat' CodeBlock 'while' Expression
+
+For ::= 'for' ['case'] Pattern 'in' Collection CodeBlock
 If you wish to take a look at FDeclaration & FCall PDAs - ask @evgerher
 
 # Swift lexical analyzer

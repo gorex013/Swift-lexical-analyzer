@@ -74,8 +74,9 @@ def parse_binary_expression(tokens: list, i: int) -> (dict, int):
 
 def parse_expression(tokens: list, i: int) -> (dict, int):
     result = {}
-    part, i = parse_try_operator(tokens, i)
-    result += part
+    if tokens[i] == keywords['try']:
+        part, i = parse_try_operator(tokens, i)
+        result += part
     part, i = parse_prefix_expression(tokens, i)
     result += part
     part, i = parse_binary_expression(tokens, i)
@@ -85,6 +86,3 @@ def parse_expression(tokens: list, i: int) -> (dict, int):
     else:
         result["expression"] = result
     return result, i
-
-
-

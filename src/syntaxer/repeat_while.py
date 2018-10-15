@@ -1,15 +1,17 @@
 import json
 
+from src.govno_cod.expression import parse_expression
 from src.lexer.lexical_analyzer import lexer
-from src.syntaxer.if_statement import parse_code_block, parse_condition_list
+from src.syntaxer.if_statement import parse_code_block
 
 
 def parse_repeat_while(tokens: list, i: int) -> (dict, int):
     result = {}
     result["code-block"], i = parse_code_block(tokens, i)
-    result["condition-list"], i = parse_condition_list(tokens, i)
+    print(result["code-block"])
+    result["expression"], i = parse_expression(tokens, i)
     if result is not None:
-        result["repeat-while-loop"] = result
+        result = {"repeat-while-loop": result}
     return result, i
 
 
