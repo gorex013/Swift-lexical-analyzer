@@ -62,6 +62,22 @@ class SyntaxerTests(unittest.TestCase):
         self.assertEquals(type(results[0]), FunctionDefinition)
         self.assertEquals(type(results[1]), FunctionDefinition)
         self.assertEquals(type(results[2]), FunctionDefinition)
+
+    def test_funcs_calls_vars(self):
+        with open('swift_examples/test_funcs2.txt') as f:
+            content = f.read()
+        tokens = lexer(content)
+        results = transform_funcs(tokens)
+        print(results)
+
+        self.assertEquals(type(results[0]), FunctionDefinition)
+        self.assertEquals(type(results[1]), FunctionDefinition)
+        self.assertEquals(type(results[2]), FunctionDefinition)
+        self.assertEquals(type(results[3]), VariableDefinition)
+        self.assertEquals(type(results[4]), VariableDefinition)
+        self.assertEquals(type(results[5]), FunctionCall)
+        self.assertEquals(type(results[5].args[1]), FunctionCall)
         self.assertEquals(type(results[0].fbody[0]), FunctionCall)
         self.assertEquals(type(results[0].fbody[1]), VariableDefinition)
         self.assertEquals(type(results[0].fbody[2]), VariableDefinition)
+

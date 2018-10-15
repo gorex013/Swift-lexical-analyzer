@@ -11,3 +11,5 @@ func bre(a:String) -> Int {
 func bar(a:String) -> Int {
     print("hello")
 }
+let b:String, c:Int = 15
+print("dowgs", call())
