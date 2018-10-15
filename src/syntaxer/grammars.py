@@ -243,8 +243,10 @@ class FunctionCallGrammar:
     def save_arg(self, token):
         if token not in keywords.values():
             if type(token) is dict and (FunctionCallGrammar.is_string(token) or FunctionCallGrammar.is_number(token)):
-                token = self.preprocess_literal(token)
-            self.args.append(token)
+                token = FunctionCallGrammar.preprocess_literal(token)
+                self.args.append(token)
+            elif 'LP' not in token and 'RP' not in token:
+                self.args.append(token)
 
     def is_string(token):
         is_inline = token.get('INLINE_STRING_LITERAL', None) is not None
@@ -274,7 +276,7 @@ class FunctionCallGrammar:
             hexad = token.get('octal_integer', None)
             return integer or binary or floatt or double or hexad
 
-            return value
+        # return value
         raise Exception("How did you come here?")
 
     def complex_action(self, token):
@@ -300,7 +302,7 @@ def parse_function_call(tokens, pointer, initial=1):
     fcall_grammar.states = {}
     for i in range(11):
         fcall_grammar.states[i] = fcall_grammar.State(name=i)
-    fcall_grammar.states[4].action = fcall_grammar.save_arg
+    fcall_grammar.states[3].action = fcall_grammar.save_arg
     fcall_grammar.states[8].action = fcall_grammar.complex_action
     fcall_grammar.states[7].action = fcall_grammar.save_arg
     fcall_grammar.states[1].action = fcall_grammar.save_name

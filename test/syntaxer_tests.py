@@ -1,7 +1,7 @@
 import unittest
 
 from src.syntaxer.grammars import *
-from src.syntaxer.syntaxer import transform_funcs
+from src.syntaxer.syntaxer import transform_funcs, transform_main
 
 sys.path.insert(0, sys.path[0]+'/Swift-lexical-analyzer')
 sys.path.append('../src/')
@@ -67,7 +67,7 @@ class SyntaxerTests(unittest.TestCase):
         with open('swift_examples/test_funcs2.txt') as f:
             content = f.read()
         tokens = lexer(content)
-        results = transform_funcs(tokens)
+        results = transform_main(tokens)
         print(results)
 
         self.assertEquals(type(results[0]), FunctionDefinition)
@@ -79,5 +79,4 @@ class SyntaxerTests(unittest.TestCase):
         self.assertEquals(type(results[5].args[1]), FunctionCall)
         self.assertEquals(type(results[0].fbody[0]), FunctionCall)
         self.assertEquals(type(results[0].fbody[1]), VariableDefinition)
-        self.assertEquals(type(results[0].fbody[2]), VariableDefinition)
 
