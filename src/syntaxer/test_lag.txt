@@ -1,0 +1,23 @@
+func foo(a:String) -> Int {
+    print("hello")
+    var a = 10
+    let b = "Gordon"
+}
+func bre(a:String) -> Int {
+    print("hello", call())
+
+}
+
+func bar(a:String) -> Int {
+    print("hello")
+}
+let b:String, c:Int = 15
+print("dowgs", call())
+
+while a & b {
+    print("cats")
+}
+
+if a & b {
+    let b : String = 15
+}

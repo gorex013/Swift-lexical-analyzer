@@ -1,10 +1,15 @@
 from src.lexer.lexical_analyzer import lexer
 from src.lexer.swift_tokens import *
 from src.syntaxer.grammars import *
+from src.syntaxer.if_statement import parse_if_statement
+from src.syntaxer.while_loop import parse_while_loop
+
 
 def transform_main(tokens):
     copied = list(tokens)
     copied = transform_funcs(copied)
+    copied = transform_ifs(copied)
+    copied = transform_cycles(copied)
     copied = parse_expression(copied)
     return copied
 
@@ -30,17 +35,35 @@ def transform_funcs(tokens):
 
 
 def transform_ifs(tokens):
-    pass
+    copied = list(tokens)
+    for i in range(len(copied)):
+        if copied[i] == keywords['if']:
+            obj, new_index = parse_if_statement(copied, i)
+            l1 = copied[0:i]
+            l2 = copied[new_index:]
+            copied = l1 + [obj] + l2
+            obj.code = parse_expression(obj.code)
+            return copied
+    return copied
 
 
 def transform_cycles(tokens):
-    pass
+    copied = list(tokens)
+    for i in range(len(copied)):
+        if copied[i] == keywords['while']:
+            obj, new_index = parse_while_loop(copied, i)
+            l1 = copied[0:i]
+            l2 = copied[new_index-1:]
+            copied = l1 + [obj] + l2
+            obj['while-loop']["code-block"] = parse_expression(obj['while-loop']["code-block"]['statements']['statement'])
+            return copied
+    return copied
 
 
 def parse_expression(tokens):
     copied = list(tokens)
-    # copied = transform_ifs(copied)
-    # copied = transform_cycles(copied)
+    copied = transform_ifs(copied)
+    copied = transform_cycles(copied)
     for i in range(len(copied)):
         is_dict = type(copied[i]) is dict
 
@@ -63,31 +86,26 @@ def parse_expression(tokens):
 
     return copied
 
+
 def wrap_code_block(tokens, pointer):
     stack = ['{']
     index = pointer + 1  # Should be guaranteed that next token is {
-    # try:
     while len(stack) > 0:
         if tokens[index] == 'DEL_RCP':
             stack.pop()
         if tokens[index] == 'DEL_LCP':
             stack.append('{')
         index += 1
-    # except Exception:
-    #     print("Impossibru exception :: stack={} index={}".format(stack, index))
-    #     return None
 
     return index - 1
 
 
-
-
-
-
 if __name__ == '__main__':
-    with open('test_funcs.txt') as f:
+    # THIS IS MAIN
+    with open('test_lag.txt') as f:
         content = f.read()
     tokens = lexer(content)
-    results = transform_main(tokens)
+    # results = transform_main(tokens)
+    results = transform_ifs(tokens)
     print(results)
 

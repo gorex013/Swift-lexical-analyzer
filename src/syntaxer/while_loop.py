@@ -23,6 +23,6 @@ while(x<10){
     print(x)
 }
 """
-tokens = lexer(code)
-x, y = parse_while_loop(tokens, 0)
-print(json.dumps(x, sort_keys=True, indent=4, default=str))
+# tokens = lexer(code)
+# x, y = parse_while_loop(tokens, 0)
+# print(json.dumps(x, sort_keys=True, indent=4, default=str))
