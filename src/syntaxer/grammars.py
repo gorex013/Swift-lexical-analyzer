@@ -2,7 +2,7 @@ import re
 import sys
 
 # sys.path.insert(0, sys.path[0]+'/Swift-lexical-analyzer/syntaxer')
-from src.lexer.lexical_analyzer import lexer
+from src.lexer.lexical_analyzer import lexer, keywords
 from src.syntaxer.ObjectTrees import *
 
 
@@ -29,17 +29,25 @@ class VariableCreationGrammar:
         def make_transition(self, token):
             if self.action is not None:
                 self.action(token)  # Действие должно быть завязано на объект Функция
-            if type(token) is dict and token['identifier'] is not None:
+            if type(token) is dict and token.get('identifier') is not None:
                 token = 'ID'  # Обработка случая, когда у меня {'identifier': 'sdfs'} приходит, а хотелос бы 'ID'
+            if type(token) is dict and (FunctionCallGrammar.is_string(token) or FunctionCallGrammar.is_number(token)):
+                token = 'CONST'
             if token.startswith("class_"):
                 token = 'CLASS'
 
             index = self.transitions[token]
             return self.states[index]
 
-    def rec_variable(self):
-        grammar = VariableCreationGrammar(self.tokens, self.pointer + 1, initial_status=(2, self.is_const))
-        self.created_vars.append(grammar.process_var_definition())
+    def rec_variable(self, token):
+        if self.tokens[self.pointer] == 'DEL_COMMA':
+            grammar = VariableCreationGrammar(self.tokens, self.pointer + 1, initial_status=(2, self.is_const))
+            item = grammar.process_var_definition()
+            self.created_vars += item
+        elif self.tokens[self.pointer] == 'DEL_LP':
+            item, p = parse_function_call(self.tokens, self.pointer - 1)
+            self.value = item
+            self.pointer = p - 2  # Trace back on 1 item in order to close parenthesis and move back to 5th state
 
     def process_var_definition(self):
         self.states = {
@@ -51,22 +59,24 @@ class VariableCreationGrammar:
             6: self.State(name='6', final=True),
             7: self.State(name='7', action=self.save_type),
             8: self.State(name='8'),
+            9: self.State(name='9'),
         }
 
         s = self.states
-        s[1].transitions = {'VAR': 2, 'LET': 2}
+        s[1].transitions = {'D_VAR': 2, 'D_LET': 2}
         s[2].transitions = {'ID': 3}
-        s[3].transitions = {'COLON': 7, 'EQUAL': 4}
+        s[3].transitions = {'DEL_COLON': 7, 'DEL_EQUAL': 4}
         s[4].transitions = {'ID': 5, 'CONST': 5}
-        s[5].transitions = {'COMMA': 6}
-        s[7].transitions = {'COLON': 8}
+        s[5].transitions = {'DEL_COMMA': 6, 'DEL_LP': 9}
+        s[7].transitions = {'DEL_COLON': 8}
         s[8].transitions = {'CLASS': 4}
+        s[9].transitions = {'DEL_RP': 5}
 
         for item in self.states.values():
             item.states = s
 
         state = self.states[self.initial_state]  # Initial
-        while state.final is not True and self.tokens[self.pointer] != 'DEL_COMMA':  # TODO: CHECK
+        while state.final is not True or (self.pointer < len(self.tokens) and (self.tokens[self.pointer] == 'DEL_COMMA' or self.tokens[self.pointer] == 'DEL_LP')):  # TODO: CHECK
             state = state.make_transition(self.tokens[self.pointer])
             self.pointer += 1
 
@@ -74,7 +84,7 @@ class VariableCreationGrammar:
         return self.created_vars
 
     def set_const(self, boolean):
-        self.is_const = boolean
+        self.is_const = 'D_LET' in boolean
 
     def save_name(self, name):
         self.vname = name['identifier']
@@ -85,8 +95,8 @@ class VariableCreationGrammar:
     def save_value(self, value):
         if type(value) is dict and value.get('identifier', None) is not None:
             value = value['identifier']
-        elif type(value) is dict and (FunctionDeclarationGrammar.is_number(value) or FunctionDeclarationGrammar.is_string(value)):
-            value = FunctionDeclarationGrammar.preprocess_literal(value)
+        elif type(value) is dict and (FunctionCallGrammar.is_number(value) or FunctionCallGrammar.is_string(value)):
+            value = FunctionCallGrammar.preprocess_literal(value)
         self.value = value
 
 
@@ -113,7 +123,7 @@ class FunctionDeclarationGrammar:
             #     raise FunctionParseException("Incorrect order of tokens {}".format(token))
             if self.action is not None:
                 self.action(token)  # Действие должно быть завязано на объект Функция
-            if type(token) is dict and token['identifier'] is not None:
+            if type(token) is dict and token.get('identifier', None) is not None:
                 token = 'ID'  # Обработка случая, когда у меня {'identifier': 'sdfs'} приходит, а хотелос бы 'ID'
             if token.startswith("class_"):
                 token = 'CLASS'
@@ -232,9 +242,10 @@ class FunctionCallGrammar:
             return self.states[index]
 
     def save_arg(self, token):
-        if type(token) is dict and (FunctionCallGrammar.is_string(token) or FunctionCallGrammar.is_number(token)):
-            token = self.preprocess_literal(token)
-        self.args.append(token)
+        if token not in keywords.values():
+            if type(token) is dict and (FunctionCallGrammar.is_string(token) or FunctionCallGrammar.is_number(token)):
+                token = self.preprocess_literal(token)
+            self.args.append(token)
 
     def is_string(token):
         is_inline = token.get('INLINE_STRING_LITERAL', None) is not None
@@ -290,7 +301,7 @@ def parse_function_call(tokens, pointer, initial=1):
     fcall_grammar.states = {}
     for i in range(11):
         fcall_grammar.states[i] = fcall_grammar.State(name=i)
-    fcall_grammar.states[3].action = fcall_grammar.save_arg
+    fcall_grammar.states[4].action = fcall_grammar.save_arg
     fcall_grammar.states[8].action = fcall_grammar.complex_action
     fcall_grammar.states[7].action = fcall_grammar.save_arg
     fcall_grammar.states[1].action = fcall_grammar.save_name
@@ -324,3 +335,4 @@ if __name__ == "__main__":
     tokens = lexer(content)
     pointer = 0
     results = VariableCreationGrammar(tokens, pointer).process_var_definition()
+    print(results)
