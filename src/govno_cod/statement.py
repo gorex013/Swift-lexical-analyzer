@@ -1,6 +1,6 @@
-from src.lexer.swift_tokens import keywords, delimiters
-from src.syntaxer.condition_list import ConditionList, Condition
-from src.syntaxer.if_statement import IfStatement
+from src.lexer.swift_tokens import keywords
+from src.govno_cod.code_block import *
+from src.govno_cod.condition_list import ConditionList, Condition
 
 
 class Statement:
@@ -8,11 +8,11 @@ class Statement:
         self.value = value
 
     def dict(self):
-        return '"statement":{' + self.value.dict() + '}'
+        return '"statement":{' + self.value + '}'
 
     @staticmethod
-    def parse_statement(tokens: list):
-        for i in range(len(tokens)):
+    def parse_statement(tokens: list, i: int):
+        while i < len(tokens):
             if tokens[i] is keywords['if'] or tokens[i] is keywords['while']:
                 condition_strings = ''
                 while tokens[i] is not delimiters['{']:
@@ -22,7 +22,10 @@ class Statement:
                 condition_list = ConditionList()
                 for e in condition_strings:
                     condition_list.add_condition(Condition(e))
-
-
-if __name__ == '__main__':
-    Statement.parse_statement([keywords['if'], ])
+                code_block = CodeBlock()
+                if tokens[i] is delimiters['{']:
+                    i += 1
+                    statement = Statement.parse_statement(tokens, i)
+                    code_block.add_statement(statement)
+                if tokens[i] is delimiters['}']:
+                    pass
