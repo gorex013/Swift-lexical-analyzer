@@ -107,6 +107,7 @@ def keywords_replacement(content: str) -> list:
     :param content:
     :return:
     """
+    content = content.replace('\n', ' ')
     words = content.split(' ')
     for i in range(len(words)):
         words[i] = words[i].strip()  # Get rid of \n, \r, spaces, etc.

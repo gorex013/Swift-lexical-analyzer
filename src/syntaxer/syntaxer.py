@@ -2,6 +2,12 @@ from src.lexer.lexical_analyzer import lexer
 from src.lexer.swift_tokens import *
 from src.syntaxer.grammars import *
 
+def transform_main(tokens):
+    copied = list(tokens)
+    copied = transform_funcs(copied)
+    copied = parse_expression(copied)
+    return copied
+
 
 def transform_funcs(tokens):
     tok_copy = list(tokens)
@@ -82,12 +88,6 @@ if __name__ == '__main__':
     with open('test_funcs.txt') as f:
         content = f.read()
     tokens = lexer(content)
-    results = transform_funcs(tokens)
+    results = transform_main(tokens)
     print(results)
 
-    self.assertEquals(type(results[0]) is FunctionDefinition.__class__)
-    self.assertEquals(type(results[1]) is FunctionCall.__class__)
-    self.assertEquals(type(results[2]) is FunctionCall.__class__)
-    self.assertEquals(type(results[0].fbody[0]) is FunctionCall.__class__)
-    self.assertEquals(type(results[0].fbody[1]) is VariableDefinition.__class__)
-    self.assertEquals(type(results[0].fbody[2]) is VariableDefinition.__class__)

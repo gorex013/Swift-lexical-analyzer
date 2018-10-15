@@ -42,8 +42,9 @@ class VariableCreationGrammar:
     def rec_variable(self, token):
         if self.tokens[self.pointer] == 'DEL_COMMA':
             grammar = VariableCreationGrammar(self.tokens, self.pointer + 1, initial_status=(2, self.is_const))
-            item = grammar.process_var_definition()
+            item, p = grammar.process_var_definition()
             self.created_vars += item
+            self.pointer = p - 1
         elif self.tokens[self.pointer] == 'DEL_LP':
             item, p = parse_function_call(self.tokens, self.pointer - 1)
             self.value = item
@@ -53,32 +54,35 @@ class VariableCreationGrammar:
         self.states = {
             1: self.State(name='1', action=self.set_const),
             2: self.State(name='2', action=self.save_name),
-            3: self.State(name='3'),
+            3: self.State(name='3', action=self.rec_variable, final=True),
             4: self.State(name='4', action=self.save_value),
             5: self.State(name='5', action=self.rec_variable, final=True),
             6: self.State(name='6', final=True),
             7: self.State(name='7', action=self.save_type),
-            8: self.State(name='8'),
+            8: self.State(name='8', action=self.rec_variable),
             9: self.State(name='9'),
         }
 
         s = self.states
         s[1].transitions = {'D_VAR': 2, 'D_LET': 2}
         s[2].transitions = {'ID': 3}
-        s[3].transitions = {'DEL_COLON': 7, 'DEL_EQUAL': 4}
+        s[3].transitions = {'DEL_COLON': 7, 'DEL_EQUAL': 4, 'DEL_COMMA': 6}
         s[4].transitions = {'ID': 5, 'CONST': 5}
         s[5].transitions = {'DEL_COMMA': 6, 'DEL_LP': 9}
         s[7].transitions = {'CLASS': 8}
-        s[8].transitions = {'DEL_EQUAL': 4}
+        s[8].transitions = {'DEL_EQUAL': 4, 'DEL_COMMA': 6}
         s[9].transitions = {'DEL_RP': 5}
 
         for item in self.states.values():
             item.states = s
 
         state = self.states[self.initial_state]  # Initial
-        while state.final is not True or (self.pointer < len(self.tokens) and (self.tokens[self.pointer] == 'DEL_COMMA' or self.tokens[self.pointer] == 'DEL_LP')):  # TODO: CHECK
+        cond = False
+        while state.final is not True or cond:  # TODO: CHECK
             state = state.make_transition(self.tokens[self.pointer])
             self.pointer += 1
+            size_fits = self.pointer < len(self.tokens)
+            cond = size_fits and (self.tokens[self.pointer] == 'DEL_COMMA' or self.tokens[self.pointer] == 'DEL_LP' or self.tokens[self.pointer] == 'DEL_COLON')
 
         self.created_vars.append(VariableDefinition(self.vname, self.value, self.vtype, self.is_const))
         return self.created_vars, self.pointer
