@@ -1,6 +1,6 @@
 import unittest
 
-from src.syntaxer.function_grammar import *
+from src.syntaxer.grammars import *
 
 sys.path.insert(0, sys.path[0]+'/Swift-lexical-analyzer')
 sys.path.append('../src/')
