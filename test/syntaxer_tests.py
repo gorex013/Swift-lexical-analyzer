@@ -1,6 +1,7 @@
 import unittest
 
 from src.syntaxer.grammars import *
+from src.syntaxer.syntaxer import transform_funcs
 
 sys.path.insert(0, sys.path[0]+'/Swift-lexical-analyzer')
 sys.path.append('../src/')
@@ -48,3 +49,19 @@ class FunctionCallTest(unittest.TestCase):
         f2 = f_call.args[0]
         self.assertEqual(f2.name, 'call')
         self.assertListEqual(f2.args, ['"cat"'])
+
+
+class SyntaxerTests(unittest.TestCase):
+    def test_fdefs(self):
+        with open('swift_examples/test_funcs.txt') as f:
+            content = f.read()
+        tokens = lexer(content)
+        results = transform_funcs(tokens)
+        print(results)
+
+        self.assertEquals(type(results[0]), FunctionDefinition)
+        self.assertEquals(type(results[1]), FunctionDefinition)
+        self.assertEquals(type(results[2]), FunctionDefinition)
+        self.assertEquals(type(results[0].fbody[0]), FunctionCall)
+        self.assertEquals(type(results[0].fbody[1]), VariableDefinition)
+        self.assertEquals(type(results[0].fbody[2]), VariableDefinition)

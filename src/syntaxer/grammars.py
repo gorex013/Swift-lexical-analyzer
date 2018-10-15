@@ -81,7 +81,7 @@ class VariableCreationGrammar:
             self.pointer += 1
 
         self.created_vars.append(VariableDefinition(self.vname, self.value, self.vtype, self.is_const))
-        return self.created_vars
+        return self.created_vars, self.pointer
 
     def set_const(self, boolean):
         self.is_const = 'D_LET' in boolean

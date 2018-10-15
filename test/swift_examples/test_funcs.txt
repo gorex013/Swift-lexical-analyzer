@@ -1,8 +1,11 @@
 func foo(a:String) -> Int {
     print("hello")
+    var a = 10
+    let b = "Gordon"
 }
 func bre(a:String) -> Int {
-    print("hello")
+    print("hello", call())
+
 }
 
 func bar(a:String) -> Int {
