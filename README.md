@@ -110,7 +110,6 @@ Example of program call `python3 src/LexicalAnalyzer.py src/swift_examples/BTree
         2)Create tree object for every statement.
             1)Create trees for all if-statements
             2)Construct trees for all while-loop-statements
-            3)Build trees 
         3)
         4)
     
