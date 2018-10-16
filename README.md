@@ -110,8 +110,8 @@ Example of program call `python3 src/LexicalAnalyzer.py src/swift_examples/BTree
         2)Create tree object for every statement.
             1)Create trees for all if-statements
             2)Construct trees for all while-loop-statements
-        3)
-        4)
+        3)Ensemble the program tree from all smaller built trees.
+        4)Output a json representation of the program tree
     
 ### Other mentions
 1) Project was written in the beginning written in PyCharm, so `import` actions may become weird
