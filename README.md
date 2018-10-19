@@ -30,9 +30,9 @@ Method `transform_main`
 
 ## BNF
 ```bnf
-FunctionDeclaration::= func ID LP \[ID : Type\[, ID COLON Type\]* \] RP ARROW Type|(LP Type [, Type]+) RP LCP Expression RCP
+FunctionDeclaration::= func ID LP [ID : Type[, ID COLON Type]* ] RP ARROW Type|(LP Type [, Type]+) RP LCP Expression RCP
 
-FunctionCall::= ID LP \[Labeled|Const|FunctionCall \[, Labeled|Const|FunctionCall\]* \] RP  
+FunctionCall::= ID LP [Labeled|Const|FunctionCall [, Labeled|Const|FunctionCall]* ] RP  
 
 Labeled ::= ID COLON Const  
 Const ::= IntegerConst | StringConst  
