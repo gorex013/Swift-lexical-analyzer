@@ -7,16 +7,33 @@ from src.syntaxer.ObjectTrees import *
 
 
 class VariableCreationGrammar:
+    """
+    Class for Variable Definition
+    Uses DFA in order to create variable
+        Works for `let a: String = "Cat", b = 6`
+        Does not check types: `var b: String = 42` will be processed w/o error
+    Comma separated variables are processed by recursion
+
+    Constructs AAST
+
+    Forgot to implement that `var b = a`, where `a` is defined earlier.
+    """
     def __init__(self, tokens: list, pointer: int, initial_status=(1, False)):
+        """
+
+        :param tokens: list of tokens
+        :param pointer: index of current token
+        :param initial_status:  (what node to start from, is_constant or not)
+        """
         self.tokens = tokens
         self.pointer = pointer
         self.vname = ''
         self.value = ''
-        self.vtype = ''
-        self.states = []
+        self.vtype = ''  # Type of the variable. Works only with basic language types: String, Int, Float, etc.
+        self.states = []  # Links to other states
         self.initial_state = initial_status[0]
-        self.is_const = initial_status[1]
-        self.created_vars = []
+        self.is_const = initial_status[1]  # Used for variable initialization in case of comma separation
+        self.created_vars = []  # Stores created variables let a = 10, b = 15 and so on
 
     class State:
         def __init__(self, name, final=False, action=None):
@@ -24,7 +41,7 @@ class VariableCreationGrammar:
             self.final = final
             self.name = name
             self.states = {}
-            self.action = action
+            self.action = action  # action to happen if exists
 
         def make_transition(self, token):
             if self.action is not None:
@@ -32,14 +49,19 @@ class VariableCreationGrammar:
             if type(token) is dict and token.get('identifier') is not None:
                 token = 'ID'  # Обработка случая, когда у меня {'identifier': 'sdfs'} приходит, а хотелос бы 'ID'
             if type(token) is dict and (FunctionCallGrammar.is_string(token) or FunctionCallGrammar.is_number(token)):
-                token = 'CONST'
+                token = 'CONST'  # Обработка случая с константой
             if token.startswith("class_"):
-                token = 'CLASS'
+                token = 'CLASS'  # Обработка случая с классом
 
             index = self.transitions[token]
             return self.states[index]
 
     def rec_variable(self, token):
+        """
+        Method starts recursive processing of a variable
+        :param token: not used
+        :return: nothing, alters values of pointer and list of created variables
+        """
         if self.tokens[self.pointer] == 'DEL_COMMA':
             grammar = VariableCreationGrammar(self.tokens, self.pointer + 1, initial_status=(2, self.is_const))
             item, p = grammar.process_var_definition()
@@ -51,18 +73,23 @@ class VariableCreationGrammar:
             self.pointer = p - 2  # Trace back on 1 item in order to close parenthesis and move back to 5th state
 
     def process_var_definition(self):
+        """
+        Process variable definition
+        :return: created variables and new pointer position
+        """
         self.states = {
-            1: self.State(name='1', action=self.set_const),
-            2: self.State(name='2', action=self.save_name),
-            3: self.State(name='3', action=self.rec_variable, final=True),
-            4: self.State(name='4', action=self.save_value),
-            5: self.State(name='5', action=self.rec_variable, final=True),
+            1: self.State(name='1', action=self.set_const),  # set is const or not (let or var)
+            2: self.State(name='2', action=self.save_name),  # save the name of the variable
+            3: self.State(name='3', action=self.rec_variable, final=True),  # init recursive call in case of comma
+            4: self.State(name='4', action=self.save_value),  # save the value of a variable
+            5: self.State(name='5', action=self.rec_variable, final=True),  # init recursive call in case of comma
             6: self.State(name='6', final=True),
-            7: self.State(name='7', action=self.save_type),
-            8: self.State(name='8', action=self.rec_variable),
+            7: self.State(name='7', action=self.save_type),  # save type of the value
+            8: self.State(name='8', action=self.rec_variable),  # init recursive call in case of comma
             9: self.State(name='9'),
         }
 
+        # MAGIC DFA, IF YOU WISH TO TAKE A LOOK - write @evgerher
         s = self.states
         s[1].transitions = {'D_VAR': 2, 'D_LET': 2}
         s[2].transitions = {'ID': 3}
@@ -78,7 +105,7 @@ class VariableCreationGrammar:
 
         state = self.states[self.initial_state]  # Initial
         cond = False
-        while state.final is not True or cond:  # TODO: CHECK
+        while state.final is not True or cond:
             state = state.make_transition(self.tokens[self.pointer])
             self.pointer += 1
             size_fits = self.pointer < len(self.tokens)
@@ -105,6 +132,12 @@ class VariableCreationGrammar:
 
 
 class FunctionDeclarationGrammar:
+    """
+    Grammar for function declaration (definition)
+    func a(obj_a: String, obj_b: String) -> String {//make_something()}
+
+    Constructs AAST
+    """
     def __init__(self, tokens: list, pointer: int):
         self.tokens = tokens
         self.pointer = pointer
@@ -123,8 +156,6 @@ class FunctionDeclarationGrammar:
             self.states = {}
 
         def make_transition(self, token):
-            # if self.transitions.get(token, None) is None:
-            #     raise FunctionParseException("Incorrect order of tokens {}".format(token))
             if self.action is not None:
                 self.action(token)  # Действие должно быть завязано на объект Функция
             if type(token) is dict and token.get('identifier', None) is not None:
@@ -155,6 +186,8 @@ class FunctionDeclarationGrammar:
             self.rtypes.append(rtype)  # Work with types
 
     def process_func(self):
+
+        # MAGIC DFA, ask @evgerher
         self.states = {
             1: self.State(name='1'),
             2: self.State(name='2', action=self.save_name),
@@ -201,6 +234,9 @@ class FunctionDeclarationGrammar:
 
 
 class FunctionCallGrammar:
+    """
+    Grammar for function calls, uses PDA to count parenthesis
+    """
     def __init__(self, tokens: list, pointer: int, initial_state=1, fname=''):
         self.tokens = tokens
         self.pointer = pointer
@@ -218,8 +254,6 @@ class FunctionCallGrammar:
             self.opt_name = None
 
         def make_transition(self, token, stack: list):
-            # if self.transitions.get(token, None) is None:
-            #     raise FunctionParseException("Incorrect order of tokens {}".format(token))
             if self.action is not None:
                 result = self.action(token)  # Действие должно быть завязано на объект Функция
                 if result is not None:
@@ -229,7 +263,7 @@ class FunctionCallGrammar:
             if type(token) is dict and (FunctionCallGrammar.is_string(token) or FunctionCallGrammar.is_number(token)):
                 token = 'CONST'
 
-            if (self.name == 3 or self.name == 6 or self.name == 8) and token in 'DEL_RP':
+            if (self.name == 3 or self.name == 6 or self.name == 8) and token in 'DEL_RP':  # Magic :))
                 popped = stack.pop() + stack.pop()
             else:
                 popped = stack.pop()
@@ -280,6 +314,11 @@ class FunctionCallGrammar:
         raise Exception("How did you come here?")
 
     def complex_action(self, token):
+        """
+        This action is done when argument of a foo call is another foo call
+        :param token:
+        :return:
+        """
         if token is dict:  # to 9
             return self.save_complex_arg(token)
         if 'DEL_LP' in token:  # to 10
@@ -289,7 +328,7 @@ class FunctionCallGrammar:
             self.args.append(fcall)
             return self.tokens[self.pointer]
 
-    def save_complex_arg(self, token):
+    def save_complex_arg(self, token):  # Not implemented
         pass #TODO me, store somehow name and value
 
     def save_name(self, name):
@@ -297,6 +336,13 @@ class FunctionCallGrammar:
 
 
 def parse_function_call(tokens, pointer, initial=1):
+    """
+    Method for parsing function call
+    :param tokens: list of tokens
+    :param pointer: current index of token
+    :param initial: initial state of the grammar
+    :return: constructed AAST for the function call
+    """
     stack = ['Z']
     fcall_grammar = FunctionCallGrammar(tokens, pointer)
     fcall_grammar.states = {}
@@ -307,6 +353,7 @@ def parse_function_call(tokens, pointer, initial=1):
     fcall_grammar.states[7].action = fcall_grammar.save_arg
     fcall_grammar.states[1].action = fcall_grammar.save_name
 
+    # MAGIC PDA, ask @evgerher
     s = fcall_grammar.states
     s[4].final = True
     s[1].transitions = {('ID', 'Z'): (2, 'Z')}
@@ -330,13 +377,7 @@ def parse_function_call(tokens, pointer, initial=1):
     return f_call, fcall_grammar.pointer
 
 
-if __name__ == "__main__":
-    # with open('var_def.txt') as f:
-    #     content = f.read()
-    # tokens = lexer(content)
-    # pointer = 0
-    # results = VariableCreationGrammar(tokens, pointer).process_var_definition()
-    # print(results)
+if __name__ == "__main__":  # MAIN IS NOT HERE
     with open('var_type.txt') as f:
         content = f.read()
     tokens = lexer(content)

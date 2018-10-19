@@ -4,6 +4,9 @@ class Expression:
 
 
 class VariableDefinition(Expression):
+    """
+    AAST for the variable definition
+    """
     def __init__(self, name, value, vtype, is_const):
         self.name = name
         self.value = value
@@ -21,6 +24,10 @@ class VariableDefinition(Expression):
 
 
 class VariableUpdate(Expression):
+    """
+    AAST for the variable
+    ---- not implemented
+    """
     def __init__(self, name, value):
         self.name = name
         self.value = value
@@ -34,6 +41,9 @@ class VariableUpdate(Expression):
 
 
 class FunctionDefinition(Expression):
+    """
+    AAST for the Function definition
+    """
     def __init__(self, name, params, rparams, fbody):
         self.name = name
         self.params = params
@@ -51,6 +61,9 @@ class FunctionDefinition(Expression):
 
 
 class FunctionCall(Expression):
+    """
+    AAST for the function call
+    """
     def __init__(self, name, args):
         self.name = name
         self.args = args
