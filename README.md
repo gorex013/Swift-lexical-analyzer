@@ -1,12 +1,11 @@
 # Swift syntax analyzer
 #### Implemented
 ```
-1. imports
-2. functions
-3. cycles
-4. if's
-5. string and number literals
-6. variables assignments
+1. functions
+2. cycles (only while)
+3. if's
+4. string and number literals
+5. variables assignments
 ```
 
 ### Files
