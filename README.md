@@ -9,6 +9,26 @@
 6. variables assignments
 ```
 
+### Files
+- `syntaxer/syntaxer.py` - main file with all the processing. Constructs AAST/ASTs from your file
+- `syntaxer/ObjectTrees.py` - file with AAST structures
+- `syntaxer/grammars.py` - contains grammars and dfa/pdas for their creation. Constructs AAST for your object type (function definition, function call, variable definition) 
+- `test/syntaxer_tests.py` - contains a lot of examples of how to use code above and has several `swift` code examples
+
+### How it works: syntaxer
+Shrinks subsequence of tokens into AST or AAST object.
+
+Method `transform_main`
+1) `transform_funcs` - Transform function definitions and hide their code blocks
+    - Process code blocks by method `parse_expression`
+2) `transform_ifs` - transform ifs into AST objects 
+    - does not construct AST for the boolean expression inside
+3) `transform_cycles` - transforms only while loops into AST objects 
+    - does not construct AST for the boolean expression inside
+4) `parse_expression` - transform function calls and variable definitions into AASTs
+    - does not construct AST/AAST for variable update like `a = b`, where `a` and `b` are defined somewhere
+
+
 ## BNF
 ```bnf
 FunctionDeclaration::= func ID LP \[ID : Type\[, ID COLON Type\]* \] RP ARROW Type|(LP Type [, Type]+) RP LCP Expression RCP
